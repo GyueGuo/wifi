@@ -1,9 +1,8 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view>
-			<text class="title">{{title}}</text>
-		</view>
+	<view class="container">
+		<image src="/static/wifi.jpeg" class="logo"/>
+		<Button class="button" plain type="primary" :disabled="isDisabled" @getuserinfo="getUserCode">微信授权登录</Button>
+  <Button class="button" type="primary" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" :disabled="isDisabled">微信手机号登录</Button>
 	</view>
 </template>
 
@@ -11,39 +10,63 @@
 	export default {
 		data() {
 			return {
-				title: 'Hello'
+				isDisabled: false,
+				code: '',
 			}
 		},
 		onLoad() {
 
 		},
+		onShow() {
+			wx.login({
+				success(res) {
+					this.code = res?.code || '';
+				}
+			})
+		},
 		methods: {
+			getUserCode() {
 
+			},
+			getPhoneNumber(e) {
+
+			}
 		}
 	}
 </script>
 
 <style>
-	.content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
+page {
+  height: 100%;
+}
+.container {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 48rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+  .logo {
+	width: 300rpx;
+	height: 300rpx;
+  }
+.button {
+  display: block;
+  border-radius: 16rpx;
+  padding: 0;
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  font-size: 32rpx;
+  text-align: center;
+  color: #fff;
+  background-color: #039bfb;
+}
+.button:first-child {
+  margin-bottom: 48rpx;
+}
 
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin: 200rpx auto 50rpx auto;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
 </style>

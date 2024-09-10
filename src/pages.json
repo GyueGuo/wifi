@@ -1,10 +1,9 @@
 {
 	"pages": [
 		{
-			"path": "pages/wifi/index",
+			"path": "pages/register/index",
 			"style": {
-				"navigationBarTitleText": "",
-				"navigationBarBackgroundColor": "#007aff"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
@@ -14,9 +13,10 @@
 			}
 		},
 		{
-			"path": "pages/register/index",
+			"path": "pages/wifi/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#007aff"
 			}
 		},
 		{

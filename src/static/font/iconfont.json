@@ -1,0 +1,37 @@
+{
+  "id": "4679460",
+  "name": "wifi",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "4694304",
+      "name": "向下占行",
+      "font_class": "xiangxiazhanhang",
+      "unicode": "ec0b",
+      "unicode_decimal": 60427
+    },
+    {
+      "icon_id": "6151316",
+      "name": "wind-descending",
+      "font_class": "wind-descending",
+      "unicode": "e838",
+      "unicode_decimal": 59448
+    },
+    {
+      "icon_id": "6151317",
+      "name": "wind-ascending",
+      "font_class": "wind-ascending",
+      "unicode": "e839",
+      "unicode_decimal": 59449
+    },
+    {
+      "icon_id": "11349299",
+      "name": "wifi",
+      "font_class": "wifi",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    }
+  ]
+}

@@ -1,13 +1,14 @@
 {
 	"pages": [
 		{
-			"path": "pages/index/index",
+			"path": "pages/wifi/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#039bfb"
 			}
 		},
 		{
-			"path": "pages/wifi/index",
+			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": ""
 			}

@@ -18,7 +18,20 @@
       }
 		},
 		methods: {
-      handleConnect() {},
+      handleConnect() {
+        // this.connecting = true;
+        // wx.connectWifi({
+        //   SSID: '',
+        //   password: '',
+        //   success() {
+        //     this.connecting = false;
+        //     this.connected = true;
+        //   },
+        //   fail() {
+        //     this.connecting = false;
+        //   }
+        // });
+      },
 		}
 	}
 </script>
@@ -35,9 +48,8 @@ page {
   background-color: $uni-color-primary;
   color: #fff;
   .logo {
-    font-size: 300rpx;
-    margin-top: 20%;
-    margin-bottom: 10%;
+    font-size: 260rpx;
+    margin: 20% auto;
   }
   .desc {
     margin-bottom: 1em;

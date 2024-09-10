@@ -1,51 +1,57 @@
 <template>
 	<view class="content">
-		<view class="page-wifi">
-			<view class="top">
-        <text class="iconfont icon-wifi" />
-				<text class="title">点击下方按钮连接wifi</text>
-				<text class="iconfont icon-xiangxiazhanhang" />
-			</view>
-			<view class="bottom">
-				<text class="iconfont icon-wifi" />
-			</view>
-		</view>
+    <text class="iconfont icon-wifi logo" />
+    <text class="desc">免费wifi已准备好</text>
+    <view class="button" v-if="connected">已连接</view>
+    <view class="button" v-else-if="connecting">连接中...</view>
+    <view class="button" v-else @click="handleConnect">一键连接</view>
 	</view>
 </template>
 
 <script>
 	export default {
 		data() {
-			return {}
-		},
-		onLoad() {
-
+			return {
+        readyStatus: false,
+        connecting: false,
+        connected: false,
+      }
 		},
 		methods: {
-
+      handleConnect() {},
 		}
 	}
 </script>
 
-<style>
-page, .content {
+<style lang="scss">
+page {
   height: 100%;
 }
-.page-wifi {
+.content{
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #039bfb;
-}
-.top {
-  height: 50%;
-  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-.top .icon-wifi {
-  font-size: 200rpx;
+  background-color: $uni-color-primary;
+  color: #fff;
+  .logo {
+    font-size: 300rpx;
+    margin-top: 20%;
+    margin-bottom: 10%;
+  }
+  .desc {
+    margin-bottom: 1em;
+    line-height: 2em;
+    font-size: 28rpx;
+  }
+  .button {
+    width: 90%;
+    line-height: 100rpx;
+    background-color: #fff;
+    color: $uni-color-primary;
+    border-radius: 50rpx;
+    font-size: 36rpx;
+    text-align: center;
+  }
 }
 </style>

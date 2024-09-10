@@ -37,7 +37,7 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 page {
   height: 100%;
 }
@@ -49,7 +49,7 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
+  
   .logo {
 	margin-top: 200rpx;
 	width: 300rpx;
@@ -64,17 +64,18 @@ page {
   line-height: 100rpx;
   font-size: 32rpx;
   text-align: center;
+  
+&.plain {
+  border-color: $uni-color-primary !important;
+  color: $uni-color-primary !important;
 }
-.button.plain {
-  border-color: #039bfb !important;
-  color: #039bfb !important;
-}
-.button.primary {
+&.primary {
 	color: #fff !important;
-	background-color: #039bfb !important;
+	background-color: $uni-color-primary !important;
 }
-.button:last-child {
+&:last-child {
   margin-top: 48rpx;
 }
-
+}
+}
 </style>

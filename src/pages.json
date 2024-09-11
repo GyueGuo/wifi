@@ -1,12 +1,6 @@
 {
 	"pages": [
 		{
-			"path": "pages/register/index",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": ""
@@ -14,6 +8,13 @@
 		},
 		{
 			"path": "pages/wifi/index",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#007aff"
+			}
+		},
+		{
+			"path": "pages/register/index",
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationBarBackgroundColor": "#007aff"

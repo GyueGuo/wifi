@@ -12,6 +12,10 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	@import url(/static/font/iconfont.css);
+	page {
+		color: $uni-text-color;
+		height: 100%;
+	}
 </style>

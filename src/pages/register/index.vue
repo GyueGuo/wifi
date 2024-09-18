@@ -63,7 +63,7 @@ page {
 		align-items: center;
 		padding: 60rpx 0;
 		background-color: $uni-color-primary;
-		color: #fff;
+		color: $uni-text-color-inverse;
 		.avatar {
 			font-size: 200rpx;
 			
@@ -79,7 +79,7 @@ page {
 		border-radius: 12rpx;
 		margin: -40rpx 32rpx 0;
 		padding: 0 20rpx;
-		background-color: #fff;
+		background-color: $uni-text-color-inverse;
 	.item {
 		margin-top: 32rpx;
 		display: flex;
@@ -109,7 +109,7 @@ page {
 	line-height: 100rpx;
 	font-size: 32rpx;
 	text-align: center;
-	color: #fff !important;
+	color: $uni-text-color-inverse !important;
 	background-color: $uni-color-primary !important;
 	&[disabled] {
 		background-color: $uni-text-color-disable !important;

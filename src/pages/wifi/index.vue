@@ -46,7 +46,7 @@ page {
   flex-direction: column;
   align-items: center;
   background-color: $uni-color-primary;
-  color: #fff;
+  color: $uni-text-color-inverse;
   .logo {
     font-size: 260rpx;
     margin: 20% auto;
@@ -59,7 +59,7 @@ page {
   .button {
     width: 90%;
     line-height: 100rpx;
-    background-color: #fff;
+    background-color: $uni-text-color-inverse;
     color: $uni-color-primary;
     border-radius: 50rpx;
     font-size: 36rpx;

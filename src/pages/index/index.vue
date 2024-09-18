@@ -70,7 +70,7 @@ page {
   color: $uni-color-primary !important;
 }
 &.primary {
-	color: #fff !important;
+	color: $uni-text-color-inverse !important;
 	background-color: $uni-color-primary !important;
 }
 &:last-child {

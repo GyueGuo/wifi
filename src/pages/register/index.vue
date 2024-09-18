@@ -28,11 +28,20 @@
 				type: '渠道商户',
 				parent: '',
 				name: '',
-				isDisabled: false,
 			}
 		},
+		computed: {
+			isDisabled() {
+				return !this.type || !this.parent || !this.name
+			},
+		},
 		methods: {
-			submit: function(e) {
+			submit(e) {
+				uni.showLoading({
+					title: "注册中",
+					mask: true,
+				});
+				uni.hideLoading();
 				// console.log('form发生了submit事件，携带数据为：' + JSON.stringify(e.detail.value))
 				// var formdata = e.detail.value
 				// uni.showModal({
@@ -92,16 +101,19 @@ page {
 	
 .button {
 	margin-top: 100rpx;
-  display: block;
-  border-radius: 16rpx;
-  padding: 0;
-  width: 100%;
-  height: 100rpx;
-  line-height: 100rpx;
-  font-size: 32rpx;
-  text-align: center;
+	display: block;
+	border-radius: 16rpx;
+	padding: 0;
+	width: 100%;
+	height: 100rpx;
+	line-height: 100rpx;
+	font-size: 32rpx;
+	text-align: center;
 	color: #fff !important;
 	background-color: $uni-color-primary !important;
+	&[disabled] {
+		background-color: $uni-text-color-disable !important;
+	}
 }
 	}
 }

@@ -23,7 +23,7 @@
 					<input v-model.trim="wifiPassword" placeholder="请填写" :maxlength="20"/>
 				</view>
 			</view>
-			<Button class="button" :class="isDisabled ? 'disabled' : ''" type="primary" @click="submit" :disabled="isDisabled">保存修改</Button>
+			<Button class="button" type="primary" @click="submit" :disabled="isDisabled">保存修改</Button>
 		</div>
 	</view>
 </template>
@@ -37,6 +37,7 @@
 			}
 		},
 		computed: {
+
 			isDisabled() {
 				return !this.wifiPassword || !this.wifiName || !this.merchantName
 			},
@@ -117,7 +118,7 @@ page {
   text-align: center;
 	color: #fff !important;
 	background-color: $uni-color-primary !important;
-	&.disabled {
+	&[disabled] {
 		background-color: $uni-text-color-disable !important;
 	}
 }

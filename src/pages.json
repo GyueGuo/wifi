@@ -1,6 +1,12 @@
 {
 	"pages": [
 		{
+			"path": "pages/platform/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": ""
@@ -18,12 +24,6 @@
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationBarBackgroundColor": "#007aff"
-			}
-		},
-		{
-			"path": "pages/platform/index",
-			"style": {
-				"navigationBarTitleText": ""
 			}
 		},
 		{

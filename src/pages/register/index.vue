@@ -26,8 +26,9 @@
 		data() {
 			return {
 				type: '渠道商户',
-				isDisabled: false,
+				parent: '',
 				name: '',
+				isDisabled: false,
 			}
 		},
 		methods: {

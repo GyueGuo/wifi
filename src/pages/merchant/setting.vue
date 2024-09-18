@@ -2,22 +2,28 @@
 	<view class="container">
 		<div class="top">
 			<text class="iconfont icon-1USER avatar"></text>
-			<text class="welcome">欢迎注册</text>
+			<!-- <text class="welcome">欢迎注册</text> -->
 		</div>
 		<div class="form">
 			<view class="item">
-				<view class="label">商户类型</view>
+				<view class="label">商户名称</view>
 				<view class="content">
-					{{ type }}
+					<input v-model.trim="merchantName" placeholder="请填写" :maxlength="20"/>
 				</view>
 			</view>
 			<view class="item">
-				<view class="label">商户名称</view>
+				<view class="label">wifi名称</view>
 				<view class="content">
-					<input v-model.trim="name" placeholder="请填写" :maxlength="20"/>
+					<input v-model.trim="wifiName" placeholder="请填写" :maxlength="20"/>
 				</view>
 			</view>
-			<Button class="button" type="primary" @click="submit" :disabled="isDisabled">点击注册</Button>
+			<view class="item">
+				<view class="label">wifi密码</view>
+				<view class="content">
+					<input v-model.trim="wifiPassword" placeholder="请填写" :maxlength="20"/>
+				</view>
+			</view>
+			<Button class="button" :class="isDisabled ? 'disabled' : ''" type="primary" @click="submit" :disabled="isDisabled">保存修改</Button>
 		</div>
 	</view>
 </template>
@@ -25,14 +31,23 @@
 	export default {
 		data() {
 			return {
-				type: '渠道商户',
-				parent: '',
-				name: '',
-				isDisabled: false,
+				wifiPassword: '',
+				wifiName: '',
+				merchantName: '',
 			}
+		},
+		computed: {
+			isDisabled() {
+				return !this.wifiPassword || !this.wifiName || !this.merchantName
+			},
 		},
 		methods: {
 			submit: function(e) {
+				uni.showLoading({
+					title: "保存中",
+					mask: true,
+				});
+				uni.hideLoading();
 				// console.log('form发生了submit事件，携带数据为：' + JSON.stringify(e.detail.value))
 				// var formdata = e.detail.value
 				// uni.showModal({
@@ -102,6 +117,9 @@ page {
   text-align: center;
 	color: #fff !important;
 	background-color: $uni-color-primary !important;
+	&.disabled {
+		background-color: $uni-text-color-disable !important;
+	}
 }
 	}
 }

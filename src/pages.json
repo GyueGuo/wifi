@@ -1,6 +1,12 @@
 {
 	"pages": [
 		{
+			"path": "pages/merchant/setting",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
 			"path": "pages/platform/index",
 			"style": {
 				"navigationBarTitleText": ""
@@ -33,7 +39,7 @@
 			}
 		},
 		{
-			"path": "pages/merchant/index",
+			"path": "pages/merchant/report",
 			"style": {
 				"navigationBarTitleText": ""
 			}

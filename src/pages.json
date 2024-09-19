@@ -1,6 +1,12 @@
 {
 	"pages": [
 		{
+			"path": "pages/merchant/report",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
 			"path": "pages/merchant/setting",
 			"style": {
 				"navigationBarTitleText": ""
@@ -34,12 +40,6 @@
 		},
 		{
 			"path": "pages/channel/index",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/merchant/report",
 			"style": {
 				"navigationBarTitleText": ""
 			}

@@ -3,13 +3,14 @@
 		{
 			"path": "pages/merchant/report",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "收益",
+				"navigationBarBackgroundColor": "#007aff"
 			}
 		},
 		{
 			"path": "pages/merchant/setting",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "设置"
 			}
 		},
 		{
@@ -21,7 +22,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "登录"
 			}
 		},
 		{
@@ -34,7 +35,7 @@
 		{
 			"path": "pages/register/index",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "注册",
 				"navigationBarBackgroundColor": "#007aff"
 			}
 		},

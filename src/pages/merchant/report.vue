@@ -1,17 +1,19 @@
 <template>
 	<view class="content">
-		<view class="section top">
+		<view class="top">
 			<text class="title">昨日收益</text>
 			<view class="income">
-				<text>30000</text>
-				<text class="iconfont icon-wind-ascending up"></text>
-				<text class="iconfont icon-wind-descending down"></text>
+				<text class="income-number">30000</text>
+				<text class="iconfont icon-ascending1 up"></text>
+				<text class="iconfont icon-a-Descendingorder-outlined down"></text>
 			</view>
 		</view>
-
-		<picker @change="bindPickerChange" :value="date" :start="startDate" :end="endDate" fields="month" mode="date">
-			<view class="date-show">{{dateShow}}</view>
-		</picker>
+		<view class="middle">
+			<text>历史收益</text>
+			<picker @change="bindPickerChange" :value="date" :start="startDate" :end="endDate" fields="month" mode="date">
+				<view class="date-show">{{dateShow}}</view>
+			</picker>
+		</view>
 		<view class="list">
 			<view class="item">
 				<text class="name">日期</text>
@@ -65,22 +67,31 @@
 </script>
 
 <style lang="scss" scoped>
-
 	.content {
-		padding: 32rpx;
-	}
-	.section {
-		border-radius: 16rpx;
 		background-color: $uni-text-color-inverse;
 	}
 	.top {
-		
-	}
-	.title {
-		line-height: 80rpx;
-		text-indent: 32rpx;
-		font-weight: bold;
-		font-size: 48rpx;
+		padding: 60rpx 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+  		background-color: $uni-color-primary;
+		color: $uni-text-color-inverse;
+		.title {
+			line-height: 80rpx;
+			text-indent: 24rpx;
+			font-weight: bold;
+			font-size: 48rpx;
+		}
+		.income {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.income-number {
+				font-size: 100rpx;
+			}
+		}
 	}
 	.up {
 		color: red;
@@ -88,35 +99,44 @@
 	.down {
 		color: green;
 	}
-	.date-show {
-		font-weight: bold;
-		font-size: 40rpx;
-		padding: 24rpx 0 0 48rpx;
-		color: $uni-color-primary;
-	}
-	.list {
-
-	.item {
-		margin: 0 48rpx;
+	.middle {
 		display: flex;
 		align-items: center;
-		border-bottom: 1px solid #f2f2f2;
-		line-height: 104rpx;
-		&:last-child {
-			border-bottom: none;
-		}
-		.name {
-			width: 0;
-			flex: 1;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			overflow: hidden;
+		justify-content: space-between;
+		padding: 0 48rpx;
+		background-color: rgba(0,122,255, 0.5);
+		color: $uni-text-color-inverse;
+		line-height: 60rpx;
+		font-size: 36rpx;
+		.date-show {
 			font-weight: bold;
-		}
-		.date {
-			margin-left: 24rpx;
-			flex-shrink: 0;
+			font-size: 40rpx;
+			padding: 24rpx 0 0 48rpx;
+			color: $uni-color-primary;
 		}
 	}
+	.list {
+		.item {
+			margin: 0 48rpx;
+			display: flex;
+			align-items: center;
+			border-bottom: 1px solid #f2f2f2;
+			line-height: 104rpx;
+			&:last-child {
+				border-bottom: none;
+			}
+			.name {
+				width: 0;
+				flex: 1;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				font-weight: bold;
+			}
+			.date {
+				margin-left: 24rpx;
+				flex-shrink: 0;
+			}
+		}
 	}
 </style>

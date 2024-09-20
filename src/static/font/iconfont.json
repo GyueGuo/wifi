@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1103485",
+      "name": "ascending",
+      "font_class": "ascending1",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "25532209",
+      "name": "descending",
+      "font_class": "a-Descendingorder-outlined",
+      "unicode": "e6ef",
+      "unicode_decimal": 59119
+    },
+    {
       "icon_id": "1270489",
       "name": "user",
       "font_class": "1USER",
@@ -18,20 +32,6 @@
       "font_class": "xiangxiazhanhang",
       "unicode": "ec0b",
       "unicode_decimal": 60427
-    },
-    {
-      "icon_id": "6151316",
-      "name": "wind-descending",
-      "font_class": "wind-descending",
-      "unicode": "e838",
-      "unicode_decimal": 59448
-    },
-    {
-      "icon_id": "6151317",
-      "name": "wind-ascending",
-      "font_class": "wind-ascending",
-      "unicode": "e839",
-      "unicode_decimal": 59449
     },
     {
       "icon_id": "11349299",

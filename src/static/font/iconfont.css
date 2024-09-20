@@ -2,9 +2,9 @@
   font-family: "iconfont"; /* Project id 4679460 */
   src: 
        url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAUQAAsAAAAAChgAAATEAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHFQGYACDSAqGYIVQATYCJAMYCw4ABCAFhGcHcxu3CFGUDk6M7OeA20ajy7pNhhhzdw3Drkuzz/XTrzA0zePhc+3fc5NsHqqPHqhAmgjU1yWQQEKIus4g6O7mNP1dGz8SIJmwc6PJ/bbsOEPOKfrJUTHpdfg8/ZcKY1BNdjLKrSffvuQb0QCRpbD/534v/yx7IPc3AGTV6OOjaRXQB1tF4I7PdiYyAN1iXq1f8MSccRuBvjUurW1/fP9SR0taSI1tsGODpjWWgtdqR9qVBU7omip01yLeakjP0h28KX4+vloXOyRNZo9y+OaDVb8f1n8b5CdtL/mdNEbAqyc0yFhxZs54sOy/Zb3Srij0/am/sGEvZagrKR/Wf9jx4dKHn98G7T8dtQ2HodPbl67Z7p9HVFQ/xIT9uuYOKoKYzIcdYoIPl+TLhp9YTOLbQPlGmesepYQS1XFVWfoK2Swk9yklovfLSX6CprZIgLA7aBXFLKhfB50zBSxUooCoTw8m9kA5JZVuieUyGF/MG09+9swjfSnPnyMTxNOnSC/+5Im3fRxPHeAJ8TRhB5PipXbMnptBqESgECziy6EKTImsC5WXrU67PfU5ayDHpXwxD5bBi6iMh7aGgckijpqIEbHJ45TnUF/y7s9QIp7ASqR9++NwYbFkfLcXqSr0RaMWpcRaNzsg0kNWLar2jmLYyXiJp8T2gmzohVC6nGKanFGyFcXYxAGkKLz37P5K9NRXO3g+8dRiiz1x0IePn+k9O3Ee6rPcNyC3PzLO1yuCQPjD8NxPBmBTjxq/9oHTyzUUGHKduruJf+W0vz9x5EgzaHuqbLMM06kp0wyz7AdekiW1pD1xttmDiW9MG1ity3XPcnXNcs+tixOFC0PMPQ7X1c9T5PEGljEtE3Uy30vVkaC3yNK+OA3blPyeWgsjNYMtWnT/QzCLzwTp1Zf9ZLUTrdEeb+CexbW8yx7mwhBReFyde65rVpZrrjv4njAmkDs5yQWGwjEdkYnJqNBAKKt9TfKGApm399IhCP+4M38LcG45M6ZZUC9oFKRNsmNO4h7BN51i/PPRHMRJsKQ6BJFnzwTob2qMrRWmddm22dC8JEvqJe44yLVut5TKjcXOojCuDl18eV67WDvJR8+ojX/6jfFJ3AI+0R+gHeiX6qczRtsMzjcLCGfy9gKEOQseAGhXsiu5HSDdJn2g7S2A/BQgnyVdg/wvffkbrgb+v+aSHHXv/1326z3rvdZlRqHertBFAsDyP53hPBC1qAS1TA0OIwSgKm/J96Xtu1HAvyw84h0xjoL1/tVG7QYSOiFkDIaYQrCEBpsjVAw+0GclZO8BbbUgg0oPMGcAAUTDHpCoOQlkGq5jKITnQIX6CDQa1P1B38k4PNzAXJg7Ri1oYbKEYCI5b5Ji2A/001bzWOYHeQg4BUWa90tPSMi72GKY+VLEgePYwSM/G7ZthJ5jjUbSSqQ/zTI39SKpiZ26w5AmkAUmlkBgRMQldOn+vg/Im2ppDMT8eNlAZWR4UEjlAMyTnkADz2TpwYxXEsLRtRwWdcCj8qLW5SPQT69UQ4ZIVVtke6cyguag+vT4xu4lXgR99p41UuQo0USNjv6VwSDZQL4Y6+QeO1eIbJGTOJU2ENrN4sTnw8fJImjyMbqqNPkevzEPLigF') format('woff2'),
-       url('iconfont.woff?t=1726812808883') format('woff'),
-       url('iconfont.ttf?t=1726812808883') format('truetype'),
-       url('iconfont.svg?t=1726812808883#iconfont') format('svg');
+       url('static/font/iconfont.woff?t=1726812808883') format('woff'),
+       url('static/font/iconfont.ttf?t=1726812808883') format('truetype'),
+       url('static/font/iconfont.svg?t=1726812808883#iconfont') format('svg');
 }
 
 .iconfont {

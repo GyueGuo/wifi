@@ -1,10 +1,21 @@
 <template>
   <view class="content">
+
     <text class="iconfont icon-wifi logo" />
-    <text class="desc">wifi已准备好</text>
-    <view class="button" v-if="connected">已连接</view>
-    <view class="button" v-else-if="connecting">连接中...</view>
-    <view class="button" v-else @click="handleConnect">一键连接</view>
+    <view>
+      <input style="background-color: white;color: black;" type="text" v-model="ssid" placeholder="请输入wifi名称">
+    </view>
+    <view style="margin-top: 50rpx;"></view>
+    <view>
+      <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
+    </view>
+    <view>
+      <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
+    </view>
+    <!-- <text class="desc">wifi已准备好</text> -->
+    <view class="button" @click="handleConnect">一键连接</view>
+
+
   </view>
 </template>
 
@@ -15,21 +26,36 @@ export default {
       readyStatus: false,
       connecting: false,
       connected: false,
+      ssid: '',
+      pwd: '',
     }
+  },
+  onLoad() {
+
   },
   methods: {
     handleConnect() {
-      wx.startWifi({
+      let that = this;
+      wx.getLocation({
         success: function () {
-          wx.connectWifi({
-            SSID: 'aaaaa',
-            password: 'bbbb',
-            success() {
-              console.log('连接成功')
-              this.connecting = false;
-              this.connected = true;
+          wx.startWifi({
+            success: function () {
+              wx.connectWifi({
+                SSID: that.ssid,
+                password: that.pwd,
+                forceNewApi: true,
+                success() {
+                  console.log('连接成功')
+                  that.connecting = false;
+                  that.connected = true;
+                },
+                fail(e) {
+                  console.log(e)
+                  that.connecting = false;
+                }
+              });
             },
-            fail(e) {
+            fail: function (e) {
               console.log(e)
               //连接失败，需要把e.errCode枚举值转换为中文提示
               //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
@@ -38,7 +64,7 @@ export default {
                 content: e.errMsg,
                 success: function (res) {
                   if (res.confirm) {
-                    console.log('用户点击确定');
+                    console.log('');
                   } else if (res.cancel) {
                     console.log('用户点击取消');
                   }
@@ -46,28 +72,10 @@ export default {
               });
               this.connecting = false;
             }
-          });
-        },
-        fail: function (e) {
-          console.log(e)
-          //连接失败，需要把e.errCode枚举值转换为中文提示
-          //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
-          uni.showModal({
-            title: '连接失败',
-            content: e.errMsg,
-            success: function (res) {
-              if (res.confirm) {
-                console.log('');
-              } else if (res.cancel) {
-                console.log('用户点击取消');
-              }
-            }
-          });
-          this.connecting = false;
+          })
         }
       })
       this.connecting = true;
-
     },
   }
 }

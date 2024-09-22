@@ -10,6 +10,9 @@
       <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
     </view>
     <view>
+      <text class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</text>
+    </view>
+    <view>
       <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
     </view>
     <!-- <text class="desc">wifi已准备好</text> -->

@@ -7,7 +7,7 @@ export default function ({ url, method = 'post', data = {}}) {
             data,
             timeout: 5000,
             success(res) {
-                res?.code === 0 ? resolve(res) : reject(res);;
+                res?.data?.code === 0 ? resolve(res.data) : reject(res.data);;
             },
             fail(err) {
                 reject(err);

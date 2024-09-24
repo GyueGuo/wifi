@@ -6,3 +6,7 @@ export const isUserLogin = () => (
 export const setUserToken = (data) => {
     uni.setStorageSync(storageKey, data)
 }
+
+export const getUserToken = () => {
+    uni.getStorageSync(storageKey)
+}

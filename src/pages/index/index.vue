@@ -9,6 +9,7 @@
 
 <script>
 import { wechatLogin } from '../../services/user';
+import { setUserToken } from '../../utils/user';
 export default {
 	data() {
 		return {
@@ -64,11 +65,13 @@ export default {
 			if (phoneCode) {
 				params.phoneCode = phoneCode;
 			}
-			wechatLogin(params).then((res) => {
+			wechatLogin(params).then(({ data }) => {
+        setUserToken(data.token);
 				uni.navigateTo({
 					url: '/pages/merchant/report'
 				});
 			}, (err) => {
+        debugger;
 				uni.showToast({
 					icon: 'error',
 					title: err?.data?.msg || '登录失败',

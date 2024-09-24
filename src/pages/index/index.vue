@@ -1,72 +1,112 @@
 <template>
 	<view class="container">
 		<image src="/static/wifi.jpeg" class="logo" />
-		<Button class="button plain" plain type="primary" :disabled="isDisabled" @getuserinfo="getUserCode">微信授权登录</Button>
+		<Button class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">微信授权登录</Button>
 		<Button class="button primary" type="primary" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"
-			:disabled="isDisabled">微信手机号登录</Button>
+			:disabled="!code">微信手机号登录</Button>
 	</view>
 </template>
 
 <script>
+import { wechatLogin } from '../../services/user';
 export default {
 	data() {
 		return {
-			isDisabled: false,
 			code: '',
 		}
 	},
-	onLoad() {
-
-	},
 	onShow() {
 		wx.login({
-			success(res) {
+			success: (res) => {
 				this.code = res?.code || '';
 			}
-		})
+		});
 	},
 	methods: {
 		getUserCode() {
-			let that = this;
 			wx.login({
-				success: function (loginRes) {
-					const code = loginRes.code; // 微信返回的code
+				success: (res) => {
 					// 发送code到你的后台服务器
-					that.sendCodeToEnd(code, '');
+					this.code = res?.code || '';
+					this.sendCodeToEnd(res.code, '');
 				},
-				fail(err) {
-					console.log('登录失败', err);
+				fail() {
+					uni.showToast({
+						icon: 'error',
+						title: '登录失败',
+					});
 				}
 			});
 		},
 		getPhoneNumber({ detail }) {
-			if (detail) {
-				console.log(detail);
+			if (!detail.iv) {
+				uni.showToast({
+					icon: 'error',
+					title: '获取手机号失败',
+				});
 			}
+			if (detail.errMsg.indexOf("user deny") > -1) {
+				return;
+			}
+			this.checkCode(this.code).then((code) => {
+        this.sendCodeToEnd(code, detail.code)
+      }, () => {
+				uni.showToast({
+					icon: 'error',
+					title: '获取手机号失败',
+				});
+      });
 		},
 		sendCodeToEnd(code, phoneCode) {
-			let that = this;
-			let url = "/app/login/wechatLogin";
-			uni.request({
-				url: url,
-				method: 'GET',
-				data: {
-					loginCode: code
-				},
-				success: (result) => {
-					if (result.code == 0) {
-						//登陆成功 跳转到首页
-						uni.navigateTo({
-							url: '/pages/merchant/report'
-						});
-					} else {
-						//登陆失败
-					}
-				},
-				fail: (err) => {
-					//登陆失败
-				}
+			const params = {
+				loginCode: code
+			};
+			if (phoneCode) {
+				params.phoneCode = phoneCode;
+			}
+			wechatLogin(params).then((res) => {
+				uni.navigateTo({
+					url: '/pages/merchant/report'
+				});
+			}, (err) => {
+				uni.showToast({
+					icon: 'error',
+					title: err?.data?.msg || '登录失败',
+				});
 			});
+		},
+		checkCode(code) {
+			return new Promise((resolve, reject) => {
+				uni.checkSession({
+					success(val) {
+						if (val.errMsg == 'checkSession:ok') {
+							resolve(code);
+						} else {
+							uni.login({
+								provider: 'weixin',
+								success(res) {
+									resolve(res.code)
+								},
+								fail(res) {
+									reject();
+								}
+							});
+						}
+					},
+					fail(err) {
+						uni.login({
+							provider: 'weixin',
+							success(res) {
+								resolve(e.target.code);
+							},
+							fail() {
+								reject();
+							}
+						});
+					}
+				});
+
+			})
 		}
 	}
 }

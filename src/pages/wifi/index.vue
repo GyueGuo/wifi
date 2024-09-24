@@ -16,13 +16,12 @@
       <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
     </view>
     <!-- <text class="desc">wifi已准备好</text> -->
-    <view class="button" @click="handleConnect">一键连接</view>
-
-
+    <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
   </view>
 </template>
 
 <script>
+import { getAdId, getWifiConfig } from '../../services/wifi';
 export default {
   data() {
     return {
@@ -31,55 +30,147 @@ export default {
       connected: false,
       ssid: '',
       pwd: '',
+      adInfo: {},
     }
   },
-  onLoad() {
-
+  onLoad({ userid }) {
+    this.userid = userid;
+    this.getAdId();
+    this.getWifiConfig();
   },
   methods: {
-    handleConnect() {
-      let that = this;
-      wx.getLocation({
-        success: function () {
-          wx.startWifi({
-            success: function () {
-              wx.connectWifi({
-                SSID: that.ssid,
-                password: that.pwd,
-                forceNewApi: true,
-                success() {
-                  console.log('连接成功')
-                  that.connecting = false;
-                  that.connected = true;
-                },
-                fail(e) {
-                  console.log(e)
-                  that.connecting = false;
-                }
-              });
-            },
-            fail: function (e) {
-              console.log(e)
-              //连接失败，需要把e.errCode枚举值转换为中文提示
-              //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
-              uni.showModal({
-                title: '连接失败',
-                content: e.errMsg,
-                success: function (res) {
-                  if (res.confirm) {
-                    console.log('');
-                  } else if (res.cancel) {
-                    console.log('用户点击取消');
-                  }
-                }
-              });
-              this.connecting = false;
-            }
-          })
-        }
+    getAdId() {
+      getAdId({
+        uid: this.userid,
+      }).then(({ data }) => {
+        this.adInfo = data;
+      }, (err) => {
+        uni.showModal({
+          // title: '连接失败',
+          content: "广告信息初始化失败，请重试",
+          confirmText: "重试",
+          success: (res) => {
+            res.confirm && this.getAdId();
+          }
+        });
       })
-      this.connecting = true;
     },
+    getWifiConfig() {
+      getWifiConfig({
+        uid: this.userid,
+      }).then(({ data }) => {
+        console.log(data);
+      }, () => {
+        uni.showModal({
+          // title: '连接失败',
+          content: "wifi信息获取失败，请重试",
+          confirmText: "重试",
+          success: (res) => {
+            res.confirm && this.getWifiConfig();
+          }
+        });
+      })
+    },
+    getLocation() {
+      return new Promise((resolve, reject) => {
+        wx.getLocation({
+          success: resolve,
+          fail: reject
+        });
+      });
+    },
+    startWifi() {
+      return new Promise((resolve, reject) => {
+        wx.startWifi({
+          success: resolve,
+          fail: (e) => {
+            reject();
+            uni.showModal({
+              title: '连接失败',
+              content: e.errMsg,
+            });
+          }
+        });
+      });
+    },
+    connectWifi() {
+      return new Promise((resolve, reject) => {
+        wx.connectWifi({
+          SSID: this.ssid,
+          password: this.pwd,
+          forceNewApi: true,
+          success: resolve,
+          fail: reject
+        });
+      });
+    },
+    handleConnect() {
+      if (this.connecting) {
+        return;
+      }
+      this.connecting = true;
+      this.getLocation()
+        .then(() => this.startWifi())
+        .then(() => (this.connectWifi()))
+        .then(() => {
+          this.connecting = false;
+          this.connected = true;
+        }, () => {
+          this.connecting = false;
+        });
+    },
+    // handleConnect() {
+    //   let that = this;
+    //   wx.getLocation({
+    //     success: function () {
+    //       wx.startWifi({
+    //         success: function () {
+    //           wx.connectWifi({
+    //             SSID: that.ssid,
+    //             password: that.pwd,
+    //             forceNewApi: true,
+    //             success() {
+    //               console.log('连接成功')
+    //               that.connecting = false;
+    //               that.connected = true;
+    //             },
+    //             fail(e) {
+    //               console.log(e)
+    //               that.connecting = false;
+    //             }
+    //           });
+    //         },
+    //         fail: function (e) {
+    //           console.log(e)
+    //           //连接失败，需要把e.errCode枚举值转换为中文提示
+    //           //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
+    //           uni.showModal({
+    //             title: '连接失败',
+    //             content: e.errMsg,
+    //             success: function (res) {
+    //               if (res.confirm) {
+    //                 console.log('');
+    //               } else if (res.cancel) {
+    //                 console.log('用户点击取消');
+    //               }
+    //             }
+    //           });
+    //           this.connecting = false;
+    //         }
+    //       })
+    //     }
+    //   })
+    //   this.connecting = true;
+    // },
+    onadload(e) {
+      console.log('lll', e);
+    },
+    onadclose(e) {
+      console.log('ccc', e);
+    },
+    onaderror(e) {
+      console.log('rrr', e);
+    }
   }
 }
 </script>

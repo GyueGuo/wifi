@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { getAdId, getWifiConfig } from '../../services/wifi';
+import { getAdId, getWifiConfig, sendWifiLog } from '../../services/wifi';
 export default {
   data() {
     return {

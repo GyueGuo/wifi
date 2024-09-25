@@ -15,3 +15,10 @@ export const getWifiConfig = (data) => (
       data,
     })
   )
+  export const sendWifiLog = (data) => (
+    request({
+      url: '/client/wifi/log',
+      method: 'POST',
+      data,
+    })
+  )

@@ -17,6 +17,10 @@
     </view>
     <!-- <text class="desc">wifi已准备好</text> -->
     <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
+
+    <view v-if="adInfo" class="ad-modal">
+      <ad :unit-id="adInfo.adUnitId" ad-type="video" @load="onadload" @close="onadclose" @error="onaderror" />
+    </view>
   </view>
 </template>
 
@@ -30,18 +34,19 @@ export default {
       connected: false,
       ssid: '',
       pwd: '',
-      adInfo: {},
+      adInfo: null,
+      wifiInfo: null
     }
   },
-  onLoad({ userid }) {
-    this.userid = userid;
+  onLoad({ uid }) {
+    this.uid = uid;
     this.getAdId();
     this.getWifiConfig();
   },
   methods: {
     getAdId() {
       getAdId({
-        uid: this.userid,
+        uid: this.uid,
       }).then(({ data }) => {
         this.adInfo = data;
       }, (err) => {
@@ -57,9 +62,10 @@ export default {
     },
     getWifiConfig() {
       getWifiConfig({
-        uid: this.userid,
+        uid: this.uid,
       }).then(({ data }) => {
-        console.log(data);
+        // console.log(data);
+        this.wifiInfo = data;
       }, () => {
         uni.showModal({
           // title: '连接失败',
@@ -95,9 +101,10 @@ export default {
     },
     connectWifi() {
       return new Promise((resolve, reject) => {
+        const { wifiInfo } = this;
         wx.connectWifi({
-          SSID: this.ssid,
-          password: this.pwd,
+          SSID: wifiInfo.ssid,
+          password: wifiInfo.pwd,
           forceNewApi: true,
           success: resolve,
           fail: reject
@@ -207,6 +214,21 @@ page {
     border-radius: 50rpx;
     font-size: 36rpx;
     text-align: center;
+  }
+}
+
+.ad-modal {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+
+  ad {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

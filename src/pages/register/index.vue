@@ -43,7 +43,7 @@ export default {
     },
   },
   onLoad({ uid }) {
-    parentUserId = uid;
+    this.parentUserId = uid;
   },
   methods: {
     submit(e) {

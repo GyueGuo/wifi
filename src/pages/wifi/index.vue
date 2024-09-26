@@ -1,6 +1,5 @@
 <template>
-  <view class="content">
-
+  <view class="wrap">
     <text class="iconfont icon-wifi logo" />
     <view>
       <input style="background-color: white;color: black;" type="text" v-model="ssid" placeholder="请输入wifi名称">
@@ -9,37 +8,32 @@
     <view>
       <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
     </view>
-    <view>
-      <text class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</text>
-    </view>
+    <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view>
     <template v-if="wifiAvailable">
-      <view>
-        <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
-      </view>
+      <view class="desc">{{ connected ? '连接成功' : '连接失败' }}</view>
       <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
     </template>
     <template v-else>
-      <view>
-        <text class="desc">请先观看10-30秒的广告视频</text>
-      </view>
+      <view class="desc">请先观看10-30秒的广告视频</view>
       <view v-if="!connected" class="button" @click="handlePlayAd">观看广告</view>
     </template>
     <!-- <text class="desc">wifi已准备好</text> -->
-    <uni-popup ref="popup" type="center" background-color="#fff">
+    <view class="error-modal-wrap" v-show="isModalVisible">
       <view class="error-modal">
-        <text>连接失败</text>
-        <text>请复制密码，打开手机设置手动连接</text>
-        <view>
-          <text>名称：</text>
-          <text>{{wifiInfo.ssid}}</text>
+        <view class="h1">连接失败</view>
+        <view class="p">请复制密码，打开手机设置手动连接</view>
+        <view class="item">
+          <text class="label">名称：</text>
+          <text class="content">{{wifiInfo.ssid}}</text>
         </view>
-        <view>
-          <text>密码：</text>
-          <text>{{wifiInfo.pwd}}</text>
+        <view class="item">
+          <text class="label">密码：</text>
+          <text class="content">{{wifiInfo.pwd}}</text>
         </view>
-        <view @click="handleCopy">复制密码</view>
+        <button type="primary" @click="handleCopy" class="btn-copy">复制密码</view>
       </view>
-    </uni-popup>
+      <text @click="handleCloseModal" class="iconfont icon-close"/>
+    </view>
   </view>
 </template>
 
@@ -56,14 +50,14 @@ export default {
       adInfo: null,
       wifiInfo: null,
       wifiAvailable: false,
+      isModalVisible: false,
     }
   },
   onLoad({ uid }) {
     this.uid = uid;
+    this.rewardedVideoAd = null;
     // this.getAdId();
-  },
-  mounted() {
-    this.$refs.popup.open();
+    this.getWifiConfig();
   },
   methods: {
     getAdId() {
@@ -74,18 +68,23 @@ export default {
       getAdId({
         uid: this.uid,
       }).then(({ data }) => {
-        wx.hideLoading();
         if(wx.createRewardedVideoAd){
           const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
-          this.createRewardedVideoAd = rewardedVideoAd;
-          rewardedVideoAd.load().then(() => rewardedVideoAd.show());
+          this.rewardedVideoAd = rewardedVideoAd;
+          rewardedVideoAd.load().then(() => {
+            wx.hideLoading();
+            rewardedVideoAd.show()
+          });
           
           rewardedVideoAd.onError((err) => {
+            wx.hideLoading();
             sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
           });
           rewardedVideoAd.onClose((res) => {
             res && res.isEnded && this.getWifiConfig();
           })
+        } else {
+          wx.hideLoading();
         }
       }, (err) => {
         wx.hideLoading();
@@ -99,7 +98,8 @@ export default {
       });
     },
     handlePlayAd() {
-      rewardedVideoAd.load().then(() => rewardedVideoAd.show());
+      const { rewardedVideoAd } = this
+      rewardedVideoAd && rewardedVideoAd.load().then(() => rewardedVideoAd.show());
     },
     getWifiConfig() {
       wx.showLoading({
@@ -112,11 +112,11 @@ export default {
         wx.hideLoading();
         this.wifiInfo = data;
         this.handleConnect();
-      }, () => {
+      }, (err) => {
         wx.hideLoading();
         wx.showModal({
           // title: '连接失败',
-          content: "wifi信息获取失败，请重试",
+          content: err?.msg || "wifi信息获取失败，请重试",
           confirmText: "重试",
           success: (res) => {
             res.confirm && this.getWifiConfig();
@@ -172,7 +172,7 @@ export default {
           wx.hideLoading();
           this.connecting = false;
           if (this.wifiInfo) {
-            this.$refs.popup.open();
+            this.isModalVisible = true;
           } else {
             wx.showModal({
               title: '连接失败',
@@ -180,6 +180,9 @@ export default {
             });
           }
         });
+    },
+    handleCloseModal() {
+      this.isModalVisible = false;
     },
     handleCopy() {
       wx.setClipboardData({
@@ -251,7 +254,7 @@ page {
   height: 100%;
 }
 
-.content {
+.wrap {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -282,7 +285,7 @@ page {
 }
 
 .ad-modal {
-  z-index: 1;
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
@@ -295,9 +298,54 @@ page {
     height: 100%;
   }
 }
-.error-modal {
-  border-radius: 18rpx;
-  padding: 48rpx;
-  background-color: #fff;
+.error-modal-wrap {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  .error-modal {
+    padding: 48rpx;
+    background-color: #fff;
+    color: $uni-text-color;
+    border-radius: 18rpx;
+    .h1 {
+      font-size: 1.2em;
+      text-align: center;
+      font-weight: bold;
+    }
+    .p {
+      margin: 24rpx 0;
+      text-align: center;
+      color: $uni-text-color-grey;
+    }
+    .item {
+      display: flex;
+      margin: 36rpx 0;
+      font-size: 36rpx;
+      line-height: 1.5em;
+      .label{
+        width: 120rpx;
+      }
+      .content{
+        width: 0;
+        flex: 1;
+      }
+    }
+    .btn-copy {
+      background-color: $uni-color-primary;
+    }
+  }
+  .iconfont {
+    margin-top: 48rpx;
+    color: #fff;
+    font-size: 60rpx;
+  }
 }
 </style>

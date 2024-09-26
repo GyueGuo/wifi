@@ -67,9 +67,14 @@ export default {
   },
   methods: {
     getAdId() {
+      wx.showLoading({
+        title: "获取中...",
+        mask: true,
+      });
       getAdId({
         uid: this.uid,
       }).then(({ data }) => {
+        wx.hideLoading();
         if(wx.createRewardedVideoAd){
           const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
           this.createRewardedVideoAd = rewardedVideoAd;
@@ -83,26 +88,33 @@ export default {
           })
         }
       }, (err) => {
-        uni.showModal({
+        wx.hideLoading();
+        wx.showModal({
           content: "广告信息初始化失败，请重试",
           confirmText: "重试",
           success: (res) => {
             res.confirm && this.getAdId();
           }
         });
-      })
+      });
     },
     handlePlayAd() {
       rewardedVideoAd.load().then(() => rewardedVideoAd.show());
     },
     getWifiConfig() {
+      wx.showLoading({
+        title: "获取中...",
+        mask: true,
+      });
       getWifiConfig({
         uid: this.uid,
       }).then(({ data }) => {
+        wx.hideLoading();
         this.wifiInfo = data;
         this.handleConnect();
       }, () => {
-        uni.showModal({
+        wx.hideLoading();
+        wx.showModal({
           // title: '连接失败',
           content: "wifi信息获取失败，请重试",
           confirmText: "重试",
@@ -110,7 +122,7 @@ export default {
             res.confirm && this.getWifiConfig();
           }
         });
-      })
+      });
     },
     getLocation() {
       return new Promise((resolve, reject) => {
@@ -145,18 +157,24 @@ export default {
         return;
       }
       this.connecting = true;
+      wx.showLoading({
+        title: "连接中...",
+        mask: true,
+      });
       this.getLocation()
         .then(() => this.startWifi())
         .then(() => (this.connectWifi()))
         .then(() => {
           this.connecting = false;
           this.connected = true;
+          wx.hideLoading();
         }).catch(() => {
+          wx.hideLoading();
           this.connecting = false;
           if (this.wifiInfo) {
             this.$refs.popup.open();
           } else {
-            uni.showModal({
+            wx.showModal({
               title: '连接失败',
               content: e.errMsg,
             });
@@ -206,7 +224,7 @@ export default {
     //           console.log(e)
     //           //连接失败，需要把e.errCode枚举值转换为中文提示
     //           //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
-    //           uni.showModal({
+    //           wx.showModal({
     //             title: '连接失败',
     //             content: e.errMsg,
     //             success: function (res) {

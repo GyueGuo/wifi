@@ -1,23 +1,23 @@
 <template>
   <view class="wrap">
     <text class="iconfont icon-wifi logo" />
-    <view>
+    <!-- <view>
       <input style="background-color: white;color: black;" type="text" v-model="ssid" placeholder="请输入wifi名称">
     </view>
     <view style="margin-top: 50rpx;"></view>
     <view>
       <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
     </view>
-    <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view>
+    <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view> -->
     <template v-if="wifiAvailable">
-      <view class="desc">{{ connected ? '连接成功' : '连接失败' }}</view>
+      <view class="desc">wifi已准备好</view>
       <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
+      <view v-else class="button">连接成功</view>
     </template>
     <template v-else>
-      <view class="desc">请先观看10-30秒的广告视频</view>
+      <view class="desc">请先观看10-30秒的广告视频</view> 
       <view v-if="!connected" class="button" @click="handlePlayAd">观看广告</view>
     </template>
-    <!-- <text class="desc">wifi已准备好</text> -->
     <view class="error-modal-wrap" v-show="isModalVisible">
       <view class="error-modal">
         <view class="h1">连接失败</view>
@@ -101,17 +101,25 @@ export default {
       const { rewardedVideoAd } = this
       rewardedVideoAd && rewardedVideoAd.load().then(() => rewardedVideoAd.show());
     },
+    handleConnect() {
+      if (this.wifiInfo) {
+        this.connectWifi();
+      } else {
+        this.getWifiConfig();
+      }
+    },
     getWifiConfig() {
       wx.showLoading({
         title: "获取中...",
         mask: true,
       });
+      this.wifiAvailable = true;
       getWifiConfig({
         uid: this.uid,
       }).then(({ data }) => {
         wx.hideLoading();
         this.wifiInfo = data;
-        this.handleConnect();
+        this.connectWifi();
       }, (err) => {
         wx.hideLoading();
         wx.showModal({
@@ -152,7 +160,7 @@ export default {
         });
       });
     },
-    handleConnect() {
+    connectWifi() {
       if (this.connecting) {
         return;
       }
@@ -168,7 +176,7 @@ export default {
           this.connecting = false;
           this.connected = true;
           wx.hideLoading();
-        }).catch(() => {
+        }).catch((e) => {
           wx.hideLoading();
           this.connecting = false;
           if (this.wifiInfo) {
@@ -176,7 +184,7 @@ export default {
           } else {
             wx.showModal({
               title: '连接失败',
-              content: e.errMsg,
+              content: e?.errMsg || '',
             });
           }
         });
@@ -202,7 +210,7 @@ export default {
         },
       });
     }
-    // handleConnect() {
+    // connectWifi() {
     //   let that = this;
     //   wx.getLocation({
     //     success: function () {
@@ -270,7 +278,7 @@ page {
   .desc {
     margin-bottom: 1em;
     line-height: 2em;
-    font-size: 28rpx;
+    font-size: 32rpx;
   }
 
   .button {

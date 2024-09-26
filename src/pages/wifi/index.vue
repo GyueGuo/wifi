@@ -12,15 +12,34 @@
     <view>
       <text class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</text>
     </view>
-    <view>
-      <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
-    </view>
+    <template v-if="wifiAvailable">
+      <view>
+        <text class="desc">{{ connected ? '连接成功' : '连接失败' }}</text>
+      </view>
+      <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
+    </template>
+    <template v-else>
+      <view>
+        <text class="desc">请先观看10-30秒的广告视频</text>
+      </view>
+      <view v-if="!connected" class="button" @click="handlePlayAd">观看广告</view>
+    </template>
     <!-- <text class="desc">wifi已准备好</text> -->
-    <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
-
-    <view v-if="adInfo" class="ad-modal">
-      <ad :unit-id="adInfo.adUnitId" ad-type="video" @load="onadload" @close="onadclose" @error="onaderror" />
-    </view>
+    <uni-popup ref="popup" type="center" background-color="#fff">
+      <view class="error-modal">
+        <text>连接失败</text>
+        <text>请复制密码，打开手机设置手动连接</text>
+        <view>
+          <text>名称：</text>
+          <text>{{wifiInfo.ssid}}</text>
+        </view>
+        <view>
+          <text>密码：</text>
+          <text>{{wifiInfo.pwd}}</text>
+        </view>
+        <view @click="handleCopy">复制密码</view>
+      </view>
+    </uni-popup>
   </view>
 </template>
 
@@ -35,23 +54,36 @@ export default {
       ssid: '',
       pwd: '',
       adInfo: null,
-      wifiInfo: null
+      wifiInfo: null,
+      wifiAvailable: false,
     }
   },
   onLoad({ uid }) {
     this.uid = uid;
-    this.getAdId();
-    this.getWifiConfig();
+    // this.getAdId();
+  },
+  mounted() {
+    this.$refs.popup.open();
   },
   methods: {
     getAdId() {
       getAdId({
         uid: this.uid,
       }).then(({ data }) => {
-        this.adInfo = data;
+        if(wx.createRewardedVideoAd){
+          const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
+          this.createRewardedVideoAd = rewardedVideoAd;
+          rewardedVideoAd.load().then(() => rewardedVideoAd.show());
+          
+          rewardedVideoAd.onError((err) => {
+            sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
+          });
+          rewardedVideoAd.onClose((res) => {
+            res && res.isEnded && this.getWifiConfig();
+          })
+        }
       }, (err) => {
         uni.showModal({
-          // title: '连接失败',
           content: "广告信息初始化失败，请重试",
           confirmText: "重试",
           success: (res) => {
@@ -60,12 +92,15 @@ export default {
         });
       })
     },
+    handlePlayAd() {
+      rewardedVideoAd.load().then(() => rewardedVideoAd.show());
+    },
     getWifiConfig() {
       getWifiConfig({
         uid: this.uid,
       }).then(({ data }) => {
-        // console.log(data);
         this.wifiInfo = data;
+        this.handleConnect();
       }, () => {
         uni.showModal({
           // title: '连接失败',
@@ -89,13 +124,7 @@ export default {
       return new Promise((resolve, reject) => {
         wx.startWifi({
           success: resolve,
-          fail: (e) => {
-            reject();
-            uni.showModal({
-              title: '连接失败',
-              content: e.errMsg,
-            });
-          }
+          fail: reject
         });
       });
     },
@@ -122,10 +151,36 @@ export default {
         .then(() => {
           this.connecting = false;
           this.connected = true;
-        }, () => {
+        }).catch(() => {
           this.connecting = false;
+          if (this.wifiInfo) {
+            this.$refs.popup.open();
+          } else {
+            uni.showModal({
+              title: '连接失败',
+              content: e.errMsg,
+            });
+          }
         });
     },
+    handleCopy() {
+      wx.setClipboardData({
+        data: this.wifiInfo.pwd,
+        success (res) {
+          wx.showToast({
+            title: '复制失败',
+            icon: 'success',
+            duration: 2000
+          });
+        },
+        fail () {
+          wx.showModal({
+            content: '复制失败，请手动输入',
+            showCancel: false,
+          });
+        },
+      });
+    }
     // handleConnect() {
     //   let that = this;
     //   wx.getLocation({
@@ -169,15 +224,6 @@ export default {
     //   })
     //   this.connecting = true;
     // },
-    onadload(e) {
-      console.log('lll', e);
-    },
-    onadclose(e) {
-      console.log('ccc', e);
-    },
-    onaderror(e) {
-      console.log('rrr', e);
-    }
   }
 }
 </script>
@@ -230,5 +276,10 @@ page {
     width: 100%;
     height: 100%;
   }
+}
+.error-modal {
+  border-radius: 18rpx;
+  padding: 48rpx;
+  background-color: #fff;
 }
 </style>

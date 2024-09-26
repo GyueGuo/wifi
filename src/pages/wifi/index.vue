@@ -56,8 +56,8 @@ export default {
   onLoad({ uid }) {
     this.uid = uid;
     this.rewardedVideoAd = null;
-    // this.getAdId();
-    this.getWifiConfig();
+    this.getAdId();
+    // this.getWifiConfig();
   },
   methods: {
     getAdId() {

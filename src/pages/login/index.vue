@@ -16,6 +16,9 @@ export default {
 			code: '',
 		}
 	},
+  onLoad({ backurl }) {
+    this.backurl = backurl ? decodeURIComponent(backurl) : '/pages/report/index';
+  },
 	onShow() {
 		wx.login({
 			success: (res) => {
@@ -71,9 +74,9 @@ export default {
           return getUserInfo();
         }).then((res) => {
           console.log(res);
-          // uni.navigateTo({
-          // 	url: '/pages/report/index'
-          // })
+          uni.reLaunch({
+          	url: this.backurl
+          })
         }).then((err) => {
           uni.showToast({
             icon: 'error',

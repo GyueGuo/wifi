@@ -7,6 +7,10 @@ export const setUserToken = (data) => {
     uni.setStorageSync(storageKey, data)
 }
 
+export const logout = (data) => {
+    uni.setStorageSync(storageKey, data)
+}
+
 export const getUserToken = () => {
-    uni.getStorageSync(storageKey)
+   return  uni.getStorageSync(storageKey)
 }

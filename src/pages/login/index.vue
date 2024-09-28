@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { wechatLogin } from '../../services/user';
+import { wechatLogin, getUserInfo } from '../../services/user';
 import { setUserToken } from '../../utils/user';
 export default {
 	data() {
@@ -65,18 +65,21 @@ export default {
 			if (phoneCode) {
 				params.phoneCode = phoneCode;
 			}
-			wechatLogin(params).then(({ data }) => {
-        setUserToken(data.token);
-				uni.navigateTo({
-					url: '/pages/merchant/report'
-				});
-			}, (err) => {
-        debugger;
-				uni.showToast({
-					icon: 'error',
-					title: err?.data?.msg || '登录失败',
-				});
-			});
+			wechatLogin(params)
+        .then(({ data }) => {
+          setUserToken(data.token);
+          return getUserInfo();
+        }).then((res) => {
+          console.log(res);
+          // uni.navigateTo({
+          // 	url: '/pages/report/index'
+          // })
+        }).then((err) => {
+          uni.showToast({
+            icon: 'error',
+            title: err?.data?.msg || '登录失败',
+          });
+        });
 		},
 		checkCode(code) {
 			return new Promise((resolve, reject) => {
@@ -130,7 +133,7 @@ page {
 	align-items: center;
 
 	.logo {
-		margin-top: 200rpx;
+		margin-top: 300rpx;
 		width: 300rpx;
 		height: 300rpx;
 	}

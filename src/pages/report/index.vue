@@ -3,46 +3,35 @@
     <view class="top">
       <text class="title">昨日收益</text>
       <view class="income">
-        <text class="income-number">{{ totalAmount }}元</text>
-        <!-- <text class="iconfont icon-ascending1 up"></text> -->
-        <!-- <text class="iconfont icon-a-Descendingorder-outlined down"></text> -->
+        <text class="income-number">{{ totalAmount || 0 }}元</text>
       </view>
     </view>
-    <view class="middle">
-      <text>历史收益</text>
-      <picker @change="bindPickerChange" :value="date" :start="startDate" :end="endDate" fields="month" mode="date">
-        <view class="date-show">{{ dateShow }}</view>
-      </picker>
-    </view>
+    <view class="middle">历史收益</view>
     <view class="list">
       <view class="item">
         <text class="name">日期</text>
         <text class="date">收益</text>
       </view>
-      <view class="item" v-for="(report, index ) in reportList" :key="index">
-        <text class="name">{{ report.createDate }}</text>
+      <view class="item" v-for="(report, index ) in list" :key="index">
+        <text class="name bold">{{ report.createDate }}</text>
         <text class="date">{{ report.amount }}</text>
       </view>
     </view>
+		<view v-if="list.length" class="loading-more">
+			{{ isNoMore ? "暂无更多": "加载中..." }}
+		</view>
   </view>
 </template>
 
 <script>
+import { getMyReport } from '../../services/report';
+
 export default {
   data() {
-    const _t = new Date();
-    let _m = _t.getMonth() + 1;
-    if (_m < 9) {
-      _m = "0" + _m;
-    }
-    const date = `${_t.getFullYear()}-${_t.getMonth() + 1}`
     return {
       totalAmount: "32.35",
-      title: 'Hello',
-      date,
-      startDate: "2024-09",
-      endDate: date,
-      reportList: [
+      isNoMore: false,
+      list: [
         {
           createDate: "2024-09-10",
           amount: "15.23元"
@@ -52,16 +41,6 @@ export default {
           amount: "17.12元"
         }
       ]
-    }
-  },
-  computed: {
-    dateShow() {
-      let date = this.date;
-      if (!date) {
-        return "";
-      }
-      date = date.split('-');
-      return `${date[0]}年${date[1] - 0}月`;
     }
   },
   onLoad() {
@@ -86,15 +65,19 @@ export default {
     // 	}
     // });
   },
+  mounted() {
+    getMyReport().then((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    });
+  },
   onReachBottom() {
-    console.log('onReachBottom');
+    this.loadMore();
   },
   methods: {
-    bindPickerChange(e) {
-      const { value } = e.detail;
-      if (this.date !== value) {
-        this.date = value;
-      }
+    loadMore() {
+    console.log('onReachBottom');
     }
   }
 }
@@ -132,22 +115,14 @@ export default {
   }
 }
 
-.up {
-  color: red;
-}
-
-.down {
-  color: green;
-}
-
 .middle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 48rpx;
-  background-color: rgba(0, 122, 255, 0.5);
+  background-color: rgba(0, 122, 255, 0.8);
   color: $uni-text-color-inverse;
-  line-height: 60rpx;
+  line-height: 80rpx;
   font-size: 36rpx;
 
   .date-show {
@@ -165,18 +140,15 @@ export default {
     align-items: center;
     border-bottom: 1px solid #f2f2f2;
     line-height: 104rpx;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
     .name {
       width: 0;
       flex: 1;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      font-weight: bold;
+      &.bold {
+        font-weight: bold;
+      }
     }
 
     .date {
@@ -184,5 +156,10 @@ export default {
       flex-shrink: 0;
     }
   }
+}
+.loading-more {
+    text-align: center;
+    color: $uni-text-color-grey;
+    line-height: 80rpx;
 }
 </style>

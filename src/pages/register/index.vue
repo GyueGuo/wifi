@@ -106,7 +106,7 @@ page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 180rpx 0 60rpx;
+    padding: 240rpx 0 60rpx;
     background-color: $uni-color-primary;
     color: $uni-text-color-inverse;
 

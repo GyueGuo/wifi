@@ -9,15 +9,9 @@
       <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
     </view>
     <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view> -->
-    <template v-if="wifiAvailable">
-      <view class="desc">wifi已准备好</view>
-      <view v-if="!connected" class="button" @click="handleConnect">一键连接</view>
-      <view v-else class="button">连接成功</view>
-    </template>
-    <template v-else>
-      <view class="desc">请先观看10-30秒的广告视频</view> 
-      <view v-if="!connected" class="button" @click="handlePlayAd">观看广告</view>
-    </template>
+      <view class="desc">请先观看6-30秒的广告视频</view> 
+      <view v-if="connected" class="button">连接成功</view>
+      <view v-else class="button" @click="handleConnect">一键连接</view>
     <view class="error-modal-wrap" v-show="isModalVisible">
       <view class="error-modal">
         <view class="h1">连接失败</view>
@@ -97,16 +91,9 @@ export default {
         });
       });
     },
-    handlePlayAd() {
+    handleConnect() {
       const { rewardedVideoAd } = this
       rewardedVideoAd && rewardedVideoAd.load().then(() => rewardedVideoAd.show());
-    },
-    handleConnect() {
-      if (this.wifiInfo) {
-        this.connectWifi();
-      } else {
-        this.getWifiConfig();
-      }
     },
     getWifiConfig() {
       wx.showLoading({
@@ -272,7 +259,7 @@ page {
 
   .logo {
     font-size: 260rpx;
-    margin: 20% auto;
+    margin: 40% auto 20%;
   }
 
   .desc {

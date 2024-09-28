@@ -22,7 +22,8 @@
       "style": {
         "navigationBarTitleText": "wifi连接",
 		    "navigationBarTextStyle": "#fff",
-        "navigationBarBackgroundColor": "#007aff"
+        "navigationBarBackgroundColor": "#007aff",
+        "navigationStyle": "custom"
       }
     },
     {

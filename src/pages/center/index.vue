@@ -5,12 +5,12 @@
       <text>{{ name }}</text>
     </div>
     <div class="form">
-      <!-- <view>
+      <view>
         <Button class="button" type="primary" @click="submit">我的商户</Button>
       </view>
       <view>
         <Button class="button" type="primary" @click="goSetting">个人设置</Button>
-      </view> -->
+      </view>
     </div>
   </view>
 </template>

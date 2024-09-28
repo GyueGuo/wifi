@@ -4,7 +4,7 @@
       "path": "pages/wifi/index",
       "style": {
         "navigationBarTitleText": "wifi连接",
-		"navigationBarTextStyle": "#fff",
+		    "navigationBarTextStyle": "#fff",
         "navigationBarBackgroundColor": "#007aff"
       }
     },
@@ -44,8 +44,9 @@
       "path": "pages/register/index",
       "style": {
         "navigationBarTitleText": "注册",
-		"navigationBarTextStyle": "#fff",
-        "navigationBarBackgroundColor": "#007aff"
+		    "navigationBarTextStyle": "#fff",
+        "navigationBarBackgroundColor": "#007aff",
+        "navigationStyle": "custom"
       }
     },
     {

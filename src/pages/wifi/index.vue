@@ -30,7 +30,7 @@
           <text class="label">密码：</text>
           <text class="content">{{wifiInfo.pwd}}</text>
         </view>
-        <button type="primary" @click="handleCopy" class="btn-copy">复制密码</view>
+        <Button type="primary" @click="handleCopy" class="btn-copy">复制密码</Button>
       </view>
       <text @click="handleCloseModal" class="iconfont icon-close"/>
     </view>

@@ -57,7 +57,7 @@ export default {
             parentUserId: this.parentUserId,
             nickName: this.nickName,
             phone: this.phone,
-            openid: res?.code || '',
+            openId: res?.code || '',
           }).then(() => {
             uni.hideLoading();
             wx.showToast({
@@ -106,7 +106,7 @@ page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 60rpx 0;
+    padding: 180rpx 0 60rpx;
     background-color: $uni-color-primary;
     color: $uni-text-color-inverse;
 

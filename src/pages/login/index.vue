@@ -11,7 +11,8 @@
 					placeholder="请输入登陆key">
 			</view>
 			<view>
-				<Button class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">登陆</Button>
+				<Button class="button plain" plain type="primary" :disabled="!code"
+					@click="getUserNameLogin">登陆</Button>
 			</view>
 		</view>
 		<Button v-else class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">微信授权登录</Button>
@@ -69,11 +70,12 @@ export default {
 			});
 		},
 		getUserNameLogin() {
-			userNameLogin(loginKey).then(({ data }) => {
+			userNameLogin({ loginKey: this.loginKey }).then(({ data }) => {
 				setUserToken(data.token);
 				return getUserInfo();
 			}).then((res) => {
 				console.log(res);
+				setUserInfo(res.data)
 				uni.reLaunch({
 					url: this.backurl
 				})

@@ -8,6 +8,14 @@ export const wechatLogin = (data) => (
   })
 )
 
+export const userNameLogin = (data) => (
+  request({
+    url: '/app/login/userNameLogin',
+    method: 'GET',
+    data,
+  })
+)
+
 export const register = (data) =>
   request({
     url: '/app/login/register',

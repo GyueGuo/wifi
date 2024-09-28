@@ -6,35 +6,39 @@
 		<!-- </div> -->
 		<div class="form">
 			<view class="item">
-				<view class="label">商户名称</view>
+				<view class="label">wifi名称</view>
 				<view class="content">
-					<input v-model.trim="nickName" placeholder="请填写商户名称" :maxlength="20" />
+					<input v-model.trim="wifi.ssid" placeholder="请填写WIFI名称" :maxlength="20" />
 				</view>
 			</view>
-			<Button class="button" type="primary" @click="submit">保存修改</Button>
+			<view class="item">
+				<view class="label">wifi密码</view>
+				<view class="content">
+					<input v-model.trim="wifi.pwd" placeholder="请填写WIFI密码" :maxlength="20" />
+				</view>
+			</view>
+			<Button class="button" type="primary" @click="submit" :disabled="isDisabled">保存</Button>
 		</div>
 	</view>
 </template>
 <script>
-import { wechatLogin, updateUserInfo, userNameLogin } from '../../services/user';
-import { getUserInfo, updateUserNickName } from '../../utils/user';
+import { updateWifiConfig } from '../../services/wifi';
 export default {
 	data() {
 		return {
-			wifiPassword: '',
-			wifiName: '',
-			nickName: '',
+			wifi: {
+				id: null,
+				ssid: '',
+				pwd: '',
+			}
 		}
 	},
 	computed: {
 
-		isDisabled() {
-			return !this.wifiPassword || !this.wifiName || !this.merchantName
-		},
 	},
-	onLoad() {
-		const userInfo = getUserInfo();
-		this.nickName = userInfo.nickName;
+	onLoad({ wifi }) {
+
+		this.wifi = JSON.parse(wifi)
 	},
 	methods: {
 		submit: function (e) {
@@ -42,11 +46,14 @@ export default {
 				title: "保存中",
 				mask: true,
 			});
-			updateUserInfo({ nickName: this.nickName }).then((res) => {
+			updateWifiConfig(this.wifi).then((res) => {
 				console.log(res)
 				uni.hideLoading();
-				updateUserNickName(this.nickName)
-
+				if (res.code == 0) {
+					uni.navigateTo({
+						url: '/pages/user-info/wifiList'
+					})
+				}
 			})
 
 			// console.log('form发生了submit事件，携带数据为：' + JSON.stringify(e.detail.value))

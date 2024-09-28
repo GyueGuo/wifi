@@ -9,6 +9,12 @@
         <Button class="button" type="primary" @click="submit">我的商户</Button>
       </view>
       <view>
+        <Button class="button" type="primary" @click="goSetting">推广注册</Button>
+      </view>
+      <view>
+        <Button class="button" type="primary" @click="goWifiConfig">WIFI配置</Button>
+      </view>
+      <view>
         <Button class="button" type="primary" @click="goSetting">个人设置</Button>
       </view>
     </div>
@@ -27,8 +33,13 @@ export default {
   methods: {
     goSetting() {
       uni.navigateTo({
-        url: '/pages/merchant/setting'
+        url: '/pages/user-info/index'
       });
+    },
+    goWifiConfig() {
+      uni.navigateTo({
+        url: '/pages/user-info/wifiList'
+      })
     }
   }
 }
@@ -88,7 +99,7 @@ page {
     }
 
     .button {
-      margin-top: 100rpx;
+      margin-top: 50rpx;
       display: block;
       border-radius: 16rpx;
       padding: 0;

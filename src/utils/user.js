@@ -19,3 +19,11 @@ export const getUserToken = () => {
 export const setUserInfo = (data) => {
     uni.setStorageSync(userInfoKey, data)
 }
+export const getUserInfo = () => {
+    return uni.getStorageSync(userInfoKey)
+}
+export const updateUserNickName = (nickName) => {
+    const userInfo = uni.getStorageSync(userInfoKey)
+    userInfo.nickName = nickName;
+    uni.setStorageSync(userInfoKey, userInfo)
+}

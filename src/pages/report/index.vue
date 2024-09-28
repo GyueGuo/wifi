@@ -3,23 +3,28 @@
     <view class="top">
       <text class="title">昨日收益</text>
       <view class="income">
-        <text class="income-number">{{ totalAmount || 0 }}元</text>
+        <text class="income-number">{{ yesterdayAmount || 0 }}元</text>
       </view>
+      <!-- <view class="income">
+        <text class="totalAmount">余额:{{ totalAmount || 0 }}元</text>
+      </view> -->
     </view>
-    <view class="middle">历史收益</view>
+    <view>
+      <text class="middle">历史收益</text>
+    </view>
     <view class="list">
       <view class="item">
         <text class="name">日期</text>
         <text class="date">收益</text>
       </view>
       <view class="item" v-for="(report, index ) in list" :key="index">
-        <text class="name bold">{{ report.createDate }}</text>
-        <text class="date">{{ report.amount }}</text>
+        <text class="name bold">{{ report.date }}</text>
+        <text class="date">{{ report.amount }}元</text>
       </view>
     </view>
-		<view v-if="list.length" class="loading-more">
-			{{ isNoMore ? "暂无更多": "加载中..." }}
-		</view>
+    <view v-if="list.length" class="loading-more">
+      {{ isNoMore ? "暂无更多" : "加载中..." }}
+    </view>
   </view>
 </template>
 
@@ -29,17 +34,11 @@ import { getMyReport } from '../../services/report';
 export default {
   data() {
     return {
-      totalAmount: "32.35",
+      totalAmount: "*",
+      yesterdayAmount: "*",
       isNoMore: false,
       list: [
-        {
-          createDate: "2024-09-10",
-          amount: "15.23元"
-        },
-        {
-          createDate: "2024-09-11",
-          amount: "17.12元"
-        }
+
       ]
     }
   },
@@ -67,6 +66,11 @@ export default {
   },
   mounted() {
     getMyReport().then((res) => {
+      if (res.code == 0) {
+        this.list = res.data.rows;
+        this.totalAmount = res.data.totalAmount;
+        this.yesterdayAmount = res.data.yesterdayAmount;
+      }
       console.log(res);
     }, (err) => {
       console.log(err);
@@ -77,7 +81,7 @@ export default {
   },
   methods: {
     loadMore() {
-    console.log('onReachBottom');
+      console.log('onReachBottom');
     }
   }
 }
@@ -101,7 +105,7 @@ export default {
     line-height: 80rpx;
     text-indent: 24rpx;
     font-weight: bold;
-    font-size: 48rpx;
+    font-size: 32rpx;
   }
 
   .income {
@@ -110,7 +114,11 @@ export default {
     justify-content: center;
 
     .income-number {
-      font-size: 100rpx;
+      font-size: 80rpx;
+    }
+
+    .totalAmount {
+      font-size: 40rpx;
     }
   }
 }
@@ -140,12 +148,14 @@ export default {
     align-items: center;
     border-bottom: 1px solid #f2f2f2;
     line-height: 104rpx;
+
     .name {
       width: 0;
       flex: 1;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+
       &.bold {
         font-weight: bold;
       }
@@ -157,9 +167,10 @@ export default {
     }
   }
 }
+
 .loading-more {
-    text-align: center;
-    color: $uni-text-color-grey;
-    line-height: 80rpx;
+  text-align: center;
+  color: $uni-text-color-grey;
+  line-height: 80rpx;
 }
 </style>

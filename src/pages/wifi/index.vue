@@ -7,26 +7,26 @@
     <view style="margin-top: 50rpx;"></view>
     <view>
       <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
-    </view>
-    <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view> -->
-      <view class="desc">请先观看6-30秒的广告视频</view> 
-      <view v-if="connected" class="button">连接成功</view>
-      <view v-else class="button" @click="handleConnect">一键连接</view>
+    </view> -->
+    <!-- <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view> -->
+    <view class="desc">请先观看6-30秒的广告视频</view>
+    <view v-if="connected" class="button">连接成功</view>
+    <view v-else class="button" @click="handleConnect">一键连接</view>
     <view class="error-modal-wrap" v-show="isModalVisible">
       <view class="error-modal">
         <view class="h1">连接失败</view>
         <view class="p">请复制密码，打开手机设置手动连接</view>
         <view class="item">
           <text class="label">名称：</text>
-          <text class="content">{{wifiInfo.ssid}}</text>
+          <text class="content">{{ wifiInfo.ssid }}</text>
         </view>
         <view class="item">
           <text class="label">密码：</text>
-          <text class="content">{{wifiInfo.pwd}}</text>
+          <text class="content">{{ wifiInfo.pwd }}</text>
         </view>
         <Button type="primary" @click="handleCopy" class="btn-copy">复制密码</Button>
       </view>
-      <text @click="handleCloseModal" class="iconfont icon-close"/>
+      <text @click="handleCloseModal" class="iconfont icon-close" />
     </view>
   </view>
 </template>
@@ -62,14 +62,14 @@ export default {
       getAdId({
         uid: this.uid,
       }).then(({ data }) => {
-        if(wx.createRewardedVideoAd){
+        if (wx.createRewardedVideoAd) {
           const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
           this.rewardedVideoAd = rewardedVideoAd;
           rewardedVideoAd.load().then(() => {
             wx.hideLoading();
             rewardedVideoAd.show()
           });
-          
+
           rewardedVideoAd.onError((err) => {
             wx.hideLoading();
             sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
@@ -182,14 +182,14 @@ export default {
     handleCopy() {
       wx.setClipboardData({
         data: this.wifiInfo.pwd,
-        success (res) {
+        success(res) {
           wx.showToast({
             title: '复制失败',
             icon: 'success',
             duration: 2000
           });
         },
-        fail () {
+        fail() {
           wx.showModal({
             content: '复制失败，请手动输入',
             showCancel: false,
@@ -293,6 +293,7 @@ page {
     height: 100%;
   }
 }
+
 .error-modal-wrap {
   z-index: 1;
   position: fixed;
@@ -301,42 +302,51 @@ page {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
+  ;
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.7);
+
   .error-modal {
     padding: 48rpx;
     background-color: #fff;
     color: $uni-text-color;
     border-radius: 18rpx;
+
     .h1 {
       font-size: 1.2em;
       text-align: center;
       font-weight: bold;
     }
+
     .p {
       margin: 24rpx 0;
       text-align: center;
       color: $uni-text-color-grey;
     }
+
     .item {
       display: flex;
       margin: 36rpx 0;
       font-size: 36rpx;
       line-height: 1.5em;
-      .label{
+
+      .label {
         width: 120rpx;
       }
-      .content{
+
+      .content {
         width: 0;
         flex: 1;
       }
     }
+
     .btn-copy {
       background-color: $uni-color-primary;
     }
   }
+
   .iconfont {
     margin-top: 48rpx;
     color: #fff;

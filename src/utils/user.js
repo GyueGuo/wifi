@@ -1,4 +1,5 @@
 const storageKey = "USER_AUTH_TOKEN";
+const userInfoKey = "USER_INFO";
 export const isUserLogin = () => (
     !!uni.getStorageSync(storageKey)
 )
@@ -12,5 +13,9 @@ export const logout = (data) => {
 }
 
 export const getUserToken = () => {
-   return  uni.getStorageSync(storageKey)
+    return uni.getStorageSync(storageKey)
+}
+
+export const setUserInfo = (data) => {
+    uni.setStorageSync(userInfoKey, data)
 }

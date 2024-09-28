@@ -1,24 +1,50 @@
 <template>
 	<view class="container">
 		<image src="/static/wifi.jpeg" class="logo" />
-		<Button class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">微信授权登录</Button>
-		<Button class="button primary" type="primary" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"
-			:disabled="!code">微信手机号登录</Button>
+		<view v-if="loginConfig">
+			<text>该系统仅供内部注册人员使用</text>
+		</view>
+		<view style="margin-top: 50rpx;"></view>
+		<view v-if="loginConfig">
+			<view>
+				<input style="background-color: white;color: black;" type="text" v-model="loginKey"
+					placeholder="请输入登陆key">
+			</view>
+			<view>
+				<Button class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">登陆</Button>
+			</view>
+		</view>
+		<Button v-else class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">微信授权登录</Button>
+		<!-- <Button class="button primary" type="primary" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"
+			:disabled="!code">微信手机号登录</Button> -->
 	</view>
 </template>
 
 <script>
-import { wechatLogin, getUserInfo } from '../../services/user';
-import { setUserToken } from '../../utils/user';
+import { wechatLogin, getUserInfo, userNameLogin } from '../../services/user';
+import { setUserToken, setUserInfo } from '../../utils/user';
+import { getLoginConfig } from '../../services/system';
 export default {
 	data() {
 		return {
 			code: '',
+			loginConfig: false,
+			version: '1.0.1',
+			loginKey: ''
 		}
 	},
-  onLoad({ backurl }) {
-    this.backurl = backurl ? decodeURIComponent(backurl) : '/pages/report/index';
-  },
+	onLoad({ backurl }) {
+		//这个是为了审核时审核员登陆使用
+		getLoginConfig().then((res) => {
+			if (res.code == 0) {
+				if (this.version == res.data) {
+					this.loginConfig = true;
+				}
+
+			}
+		})
+		this.backurl = backurl ? decodeURIComponent(backurl) : '/pages/report/index';
+	},
 	onShow() {
 		wx.login({
 			success: (res) => {
@@ -42,6 +68,22 @@ export default {
 				}
 			});
 		},
+		getUserNameLogin() {
+			userNameLogin(loginKey).then(({ data }) => {
+				setUserToken(data.token);
+				return getUserInfo();
+			}).then((res) => {
+				console.log(res);
+				uni.reLaunch({
+					url: this.backurl
+				})
+			}).catch((err) => {
+				uni.showToast({
+					icon: 'error',
+					title: err?.data?.msg || '登录失败',
+				});
+			});
+		},
 		getPhoneNumber({ detail }) {
 			if (!detail.iv) {
 				uni.showToast({
@@ -53,13 +95,13 @@ export default {
 				return;
 			}
 			this.checkCode(this.code).then((code) => {
-        this.sendCodeToEnd(code, detail.code)
-      }, () => {
+				this.sendCodeToEnd(code, detail.code)
+			}, () => {
 				uni.showToast({
 					icon: 'error',
 					title: '获取手机号失败',
 				});
-      });
+			});
 		},
 		sendCodeToEnd(code, phoneCode) {
 			const params = {
@@ -69,20 +111,21 @@ export default {
 				params.phoneCode = phoneCode;
 			}
 			wechatLogin(params)
-        .then(({ data }) => {
-          setUserToken(data.token);
-          return getUserInfo();
-        }).then((res) => {
-          console.log(res);
-          uni.reLaunch({
-          	url: this.backurl
-          })
-        }).then((err) => {
-          uni.showToast({
-            icon: 'error',
-            title: err?.data?.msg || '登录失败',
-          });
-        });
+				.then(({ data }) => {
+					setUserToken(data.token);
+					return getUserInfo();
+				}).then((res) => {
+					console.log(res);
+					setUserInfo(res.data)
+					uni.reLaunch({
+						url: this.backurl
+					})
+				}).catch((err) => {
+					uni.showToast({
+						icon: 'error',
+						title: err?.data?.msg || '登录失败',
+					});
+				});
 		},
 		checkCode(code) {
 			return new Promise((resolve, reject) => {

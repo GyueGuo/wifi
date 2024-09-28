@@ -1,6 +1,23 @@
 {
   "pages": [
     {
+      "path": "pages/report/index",
+      "style": {
+        "navigationBarTitleText": "收益",
+		    "navigationBarTextStyle": "#fff",
+        "navigationBarBackgroundColor": "#007aff"
+      }
+    },
+    {
+      "path": "pages/center/index",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+		    "navigationBarTextStyle": "#fff",
+        "navigationBarBackgroundColor": "#007aff"
+      }
+    },
+    
+    {
       "path": "pages/wifi/index",
       "style": {
         "navigationBarTitleText": "wifi连接",
@@ -9,35 +26,11 @@
       }
     },
     {
-      "path": "pages/center/index",
-      "style": {
-        "navigationBarTitleText": "个人中心"
-      }
-    },
-    {
-      "path": "pages/merchant/report",
-      "style": {
-        "navigationBarTitleText": "收益",
-        "navigationBarBackgroundColor": "#007aff"
-      }
-    },
-    {
-      "path": "pages/merchant/setting",
-      "style": {
-        "navigationBarTitleText": "设置"
-      }
-    },
-    {
-      "path": "pages/platform/index",
-      "style": {
-        "navigationBarTitleText": ""
-      }
-    },
-    {
-      "path": "pages/index/index",
+      "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录",
-        "navigationBarBackgroundColor": "#fff"
+        "navigationBarBackgroundColor": "#fff",
+        "navigationStyle": "custom"
       }
     },
     {
@@ -50,9 +43,15 @@
       }
     },
     {
-      "path": "pages/channel/index",
+      "path": "pages/user-info/index",
       "style": {
-        "navigationBarTitleText": ""
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
+      "path": "pages/platform/index",
+      "style": {
+        "navigationBarTitleText": "我的商户"
       }
     }
   ],
@@ -69,16 +68,16 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/wifi/index",
+        "pagePath": "pages/report/index",
         "iconPath": "static/index.png",
         "selectedIconPath": "static/index-selected.png",
-        "text": "首页"
+        "text": "收益"
       },
       {
         "pagePath": "pages/center/index",
         "iconPath": "static/center.png",
         "selectedIconPath": "static/center-selected.png",
-        "text": "我"
+        "text": "我的"
       }
     ]
   }

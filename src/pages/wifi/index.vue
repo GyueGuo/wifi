@@ -36,6 +36,8 @@ import { getAdId, getWifiConfig, sendWifiLog } from '../../services/wifi';
 export default {
   data() {
     return {
+      uid: '',
+      wifi: '',
       readyStatus: false,
       connecting: false,
       connected: false,
@@ -47,8 +49,9 @@ export default {
       isModalVisible: false,
     }
   },
-  onLoad({ uid }) {
+  onLoad({ uid, wifiId }) {
     this.uid = uid;
+    this.wifiId = wifiId;
     this.rewardedVideoAd = null;
     this.getAdId();
     // this.getWifiConfig();

@@ -9,7 +9,7 @@
         <Button class="button" type="primary" @click="submit">我的商户</Button>
       </view>
       <view>
-        <Button class="button" type="primary" @click="goSetting">推广注册</Button>
+        <Button class="button" type="primary" @click="previewCode">推广注册</Button>
       </view>
       <view>
         <Button class="button" type="primary" @click="goWifiConfig">WIFI配置</Button>
@@ -21,16 +21,28 @@
   </view>
 </template>
 <script>
+import { getUserInfo } from '../../services/user';
 export default {
   data() {
     return {
-      name: '欢迎回来'
+      name: '欢迎回来',
+      data: null,
     }
   },
   onLoad() {
     //通过store获取商户信息
   },
+  onShow() {
+    getUserInfo().then(({data}) => {
+      this.userInfo = data;
+    })
+  },
   methods: {
+    previewCode() {
+      wx.previewImage({
+        urls: []
+      })
+    },
     goSetting() {
       uni.navigateTo({
         url: '/pages/user-info/index'

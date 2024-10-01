@@ -1,17 +1,21 @@
 <template>
   <view class="wrap">
-    <text class="iconfont icon-wifi logo" />
-    <!-- <view>
-      <input style="background-color: white;color: black;" type="text" v-model="ssid" placeholder="请输入wifi名称">
+    <view class="ad-top">
+      <ad v-if="adShow" unit-id="adunit-7370633a9cf12683" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
-    <view style="margin-top: 50rpx;"></view>
-    <view>
-      <input style="background-color: white;color: black;" type="text" v-model="pwd" placeholder="请输入wifi密码">
-    </view> -->
-    <!-- <view class="desc">连接前请将已连接的wifi删除，并且打开GPS定位开关</view> -->
-    <view class="desc">请先观看6-30秒的广告视频</view>
+    <text class="iconfont icon-wifi logo" />
     <view v-if="connected" class="button">连接成功</view>
-    <view v-else class="button" @click="handleConnect">一键连接</view>
+    <view v-else class="button" @click="getAdId">一键连接</view>
+    <view class="ad">
+      <ad unit-id="adunit-ea88db8d736dc179" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    </view>
+    <view class="ad">
+      <ad unit-id="adunit-08db73567f70e5d9" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    </view>
+    <view class="ad">
+      <ad unit-id="adunit-869b836e8376e47f" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    </view>
+
     <view class="error-modal-wrap" v-show="isModalVisible">
       <view class="error-modal">
         <view class="h1">连接失败</view>
@@ -47,16 +51,37 @@ export default {
       wifiInfo: null,
       wifiAvailable: false,
       isModalVisible: false,
+      ad1: 'adunit-7370633a9cf12683',
+      ad2: 'adunit-84be61a9902ba806',
+      ad3: 'adunit-ea88db8d736dc179',
+      ad4: 'adunit-08db73567f70e5d9',
+      adShow: false,
     }
   },
-  onLoad({ uid, wifiId }) {
-    this.uid = uid;
-    this.wifiId = wifiId;
+  onLoad(option) {
+    console.log(option.q)
+    const url = 'https%3A%2F%2Fapi.congmingxiongdi.com%2Fgo-mp%2Fwifi%3FuserId%3D260%26wifiId%3D2';
+    const params = this.getUrlParams(decodeURIComponent(url));
+    console.log(params);
+    this.uid = params.userId;
+    this.wifiId = params.wifiId;
     this.rewardedVideoAd = null;
-    this.getAdId();
     // this.getWifiConfig();
   },
   methods: {
+    getUrlParams(url) {
+      let urlStr = url.split('?')[1];
+      // 创建空对象存储参数
+      let obj = {};
+      // 再通过 & 将每一个参数单独分割出来
+      let paramsArr = urlStr.split('&');
+      for (let i = 0, len = paramsArr.length; i < len; i++) {
+        // 再通过 = 将每一个参数分割为 key:value 的形式
+        let arr = paramsArr[i].split('=');
+        obj[arr[0]] = arr[1];
+      }
+      return obj;
+    },
     getAdId() {
       wx.showLoading({
         title: "获取中...",
@@ -65,6 +90,7 @@ export default {
       getAdId({
         uid: this.uid,
       }).then(({ data }) => {
+        console.log('获取广告数据', data)
         if (wx.createRewardedVideoAd) {
           const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
           this.rewardedVideoAd = rewardedVideoAd;
@@ -72,7 +98,6 @@ export default {
             wx.hideLoading();
             rewardedVideoAd.show()
           });
-
           rewardedVideoAd.onError((err) => {
             wx.hideLoading();
             sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
@@ -166,7 +191,9 @@ export default {
           this.connecting = false;
           this.connected = true;
           wx.hideLoading();
+          this.adShow = true;
         }).catch((e) => {
+          this.adShow = true;
           wx.hideLoading();
           this.connecting = false;
           if (this.wifiInfo) {
@@ -252,6 +279,14 @@ page {
   height: 100%;
 }
 
+.ad-top {
+  margin-top: 160rpx;
+}
+
+.ad {
+  margin-top: 22rpx;
+}
+
 .wrap {
   height: 100%;
   display: flex;
@@ -262,7 +297,7 @@ page {
 
   .logo {
     font-size: 260rpx;
-    margin: 40% auto 20%;
+    margin: 15% auto 10%;
   }
 
   .desc {
@@ -351,7 +386,7 @@ page {
   }
 
   .iconfont {
-    margin-top: 48rpx;
+    margin-top: 24rpx;
     color: #fff;
     font-size: 60rpx;
   }

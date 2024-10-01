@@ -31,7 +31,7 @@ export default {
 			code: '',
 			loginConfig: false,
 			version: '1.0.1',
-			loginKey: ''
+			loginKey: 'test123456789'
 		}
 	},
 	onLoad({ backurl }) {

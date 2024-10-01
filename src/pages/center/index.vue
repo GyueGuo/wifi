@@ -2,7 +2,7 @@
   <view class="container">
     <div class="top">
       <text class="iconfont icon-1USER avatar"></text>
-      <text>{{ name }}</text>
+      <text class="welcome">{{ userInfo ? userInfo.nickName: '' }} 欢迎回来</text>
     </div>
     <div class="form">
       <view>
@@ -25,8 +25,7 @@ import { getUserInfo } from '../../services/user';
 export default {
   data() {
     return {
-      name: '欢迎回来',
-      data: null,
+      userInfo: null,
     }
   },
   onLoad() {
@@ -90,8 +89,9 @@ page {
     overflow: hidden;
     border-radius: 12rpx;
     margin: -40rpx 32rpx 0;
-    padding: 0 20rpx;
+    padding: 0 20rpx 32rpx;
     background-color: $uni-text-color-inverse;
+    box-shadow: 0 6rpx 16rpx $uni-bg-color-hover;
 
     .item {
       margin-top: 32rpx;

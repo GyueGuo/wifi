@@ -1,5 +1,5 @@
 import { getUserToken, logout } from "./user";
-const BASE_URL = 'http://182.92.67.132';
+const BASE_URL = 'https://api.congmingxiongdi.com';
 
 export default function ({ url, method = 'post', data = {} }) {
   return new Promise((resolve, reject) => {

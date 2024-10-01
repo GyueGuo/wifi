@@ -6,7 +6,7 @@
     </div>
     <div class="form">
       <view>
-        <Button class="button" type="primary" @click="submit">我的商户</Button>
+        <Button class="button" type="primary" @click="goMyUser">我的商户</Button>
       </view>
       <view>
         <Button class="button" type="primary" @click="previewCode">推广注册</Button>
@@ -42,6 +42,11 @@ export default {
       wx.previewImage({
         urls: []
       })
+    },
+    goMyUser() {
+      uni.navigateTo({
+        url: '/pages/platform/index'
+      });
     },
     goSetting() {
       uni.navigateTo({

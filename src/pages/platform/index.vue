@@ -1,9 +1,16 @@
 <template>
-	<scroll-view class="container" scroll-y refresher-enabled @scrolltolower="loadMore" @refresherrefresh="refresh" :refresher-triggered="triggered" @refresherrestore="onRestore">
-		<!-- <view class="item" v-for="item in list" :key="item.id" @click="click">
-			<div class="name">{{ item.name }}</div>
-			<div class="date">{{ item.date }}</div>
-		</view> -->
+	<scroll-view class="container" scroll-y @scrolltolower="loadMore">
+		<view class="item">
+			<div class="name">名称</div>
+			<div class="date">分成比例</div>
+		</view>
+		<view class="item" v-for="item in list" :key="item.id" @click="click">
+			<view class="name">{{ item.name }}</view>
+			<view class="date">
+				<text>{{ item.date }}</text>
+				<text class="iconfont icon-edit"/>
+			</view>
+		</view>
 		<view class="" v-if="list.length > 0">
 			{{ isNoMore ? "暂无更多": "加载中" }}
 		</view>

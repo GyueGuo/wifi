@@ -45,6 +45,10 @@ export default {
 			updateUserInfo({ nickName: this.nickName }).then((res) => {
 				console.log(res)
 				uni.hideLoading();
+				wx.showToast({
+					icon: "none",
+					title: "修改成功",
+				})
 				updateUserNickName(this.nickName)
 
 			})
@@ -65,6 +69,7 @@ page {
 }
 
 .container {
+	padding-top: 160rpx;
 	.top {
 		display: flex;
 		flex-direction: column;

@@ -67,9 +67,9 @@ export default {
             });
             setTimeout(() => {
               wx.redirectTo({
-                url: '/pages/index/index'
+                url: '/pages/login/index'
               })
-            }, 2000);
+            }, 1000);
           }, (err) => {
             uni.hideLoading();
             wx.showModal({

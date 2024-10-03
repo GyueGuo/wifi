@@ -7,12 +7,10 @@
 		<view style="margin-top: 50rpx;"></view>
 		<view v-if="loginConfig">
 			<view>
-				<input style="background-color: white;color: black;" type="text" v-model="loginKey"
-					placeholder="请输入登陆key">
+				<input style="background-color: white;color: black;" type="text" v-model="loginKey" placeholder="请输入登陆key">
 			</view>
 			<view>
-				<Button class="button plain" plain type="primary" :disabled="!code"
-					@click="getUserNameLogin">登陆</Button>
+				<Button class="button plain" plain type="primary" :disabled="!code" @click="getUserNameLogin">登陆</Button>
 			</view>
 		</view>
 		<Button v-else class="button plain" plain type="primary" :disabled="!code" @click="getUserCode">微信授权登录</Button>
@@ -30,8 +28,8 @@ export default {
 		return {
 			code: '',
 			loginConfig: false,
-			version: '1.0.1',
-			loginKey: 'test123456789'
+			version: '1.0.2',
+			loginKey: ''
 		}
 	},
 	onLoad({ backurl }) {
@@ -41,7 +39,6 @@ export default {
 				if (this.version == res.data) {
 					this.loginConfig = true;
 				}
-
 			}
 		})
 		this.backurl = backurl ? decodeURIComponent(backurl) : '/pages/report/index';

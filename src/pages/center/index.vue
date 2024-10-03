@@ -6,10 +6,10 @@
     </div>
     <div class="form">
       <view>
-        <Button class="button" type="primary" @click="goMyUser">我的商户</Button>
+        <Button v-if="userInfo.userType != '05'" class="button" type="primary" @click="goMyUser">我的商户</Button>
       </view>
       <view>
-        <Button class="button" type="primary" @click="previewCode">推广注册</Button>
+        <Button v-if="userInfo.userType != '05'" class="button" type="primary" @click="previewCode">推广注册</Button>
       </view>
       <view>
         <Button class="button" type="primary" @click="goWifiConfig">WIFI配置</Button>

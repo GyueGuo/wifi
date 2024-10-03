@@ -8,10 +8,11 @@ export const getAdId = (data) => (
   })
 )
 
-export const getWifiConfig = () => (
+export const getWifiConfig = (data) => (
   request({
     url: '/client/wifi/config',
     method: 'GET',
+    data
   })
 )
 export const getWifiConfigList = (data) => (

@@ -1,19 +1,20 @@
 <template>
   <view class="wrap">
-    <view class="ad-top">
-      <ad v-if="adShow" unit-id="ad1" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    <view class="ad-top" v-if="ad1">
+      <ad v-if="adShow" :unit-id="ad1" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
     <text class="iconfont icon-wifi logo" />
     <view v-if="connected" class="button">连接成功</view>
-    <view v-else class="button" @click="getAdId">一键连接</view>
-    <view class="ad">
-      <ad unit-id="ad2" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+
+    <view v-else class="button" @click="showAd">一键连接</view>
+    <view class="ad" v-if="ad2">
+      <ad v-if="ad2" :unit-id="ad2" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
-    <view class="ad">
-      <ad unit-id="ad3" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    <view class="ad" v-if="ad3">
+      <ad v-if="ad3" :unit-id="ad3" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
-    <view class="ad">
-      <ad unit-id="ad4" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+    <view class="ad" v-if="ad4">
+      <ad v-if="ad4" :unit-id="ad4" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
 
     <view class="error-modal-wrap" v-show="isModalVisible">
@@ -51,10 +52,11 @@ export default {
       wifiInfo: null,
       wifiAvailable: false,
       isModalVisible: false,
-      ad1: '',
-      ad2: '',
-      ad3: '',
-      ad4: '',
+      rewardVideoAdId: '',
+      ad1: undefined,
+      ad2: undefined,
+      ad3: undefined,
+      ad4: undefined,
       adShow: false,
     }
   },
@@ -66,6 +68,16 @@ export default {
     this.wifiId = params.wifiId;
     this.rewardedVideoAd = null;
     // this.getWifiConfig();
+    getAdId({
+      uid: this.uid,
+    }).then(({ data }) => {
+      console.log('获取广告数据', data)
+      this.rewardVideoAdId = data.rewardVideoAdId;
+      this.ad1 = data.videoAdId1;
+      this.ad2 = data.videoAdId2;
+      this.ad3 = data.videoAdId3;
+      this.ad4 = data.videoAdId4;
+    })
   },
   methods: {
     getUrlParams(url) {
@@ -81,63 +93,48 @@ export default {
       }
       return obj;
     },
-    getAdId() {
+    showAd() {
       wx.showLoading({
         title: "获取中...",
         mask: true,
       });
-      getAdId({
-        uid: this.uid,
-      }).then(({ data }) => {
-        console.log('获取广告数据', data)
-        this.ad1 = data.videoAdId1;
-        this.ad2 = data.videoAdId2;
-        this.ad3 = data.videoAdId3;
-        this.ad4 = data.videoAdId4;
-        if (wx.createRewardedVideoAd) {
-          const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.rewardVideoAdId });
-          this.rewardedVideoAd = rewardedVideoAd;
-          rewardedVideoAd.load().then(() => {
-            wx.hideLoading();
-            rewardedVideoAd.show()
-          });
-          rewardedVideoAd.onError((err) => {
-            wx.hideLoading();
-            sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
-          });
-          rewardedVideoAd.onClose((res) => {
-            res && res.isEnded && this.getWifiConfig();
-          })
-        } else {
+      if (wx.createRewardedVideoAd) {
+        const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: this.rewardVideoAdId });
+        this.rewardedVideoAd = rewardedVideoAd;
+        rewardedVideoAd.load().then(() => {
           wx.hideLoading();
-        }
-      }, (err) => {
-        wx.hideLoading();
-        wx.showModal({
-          content: "广告信息初始化失败，请重试",
-          confirmText: "重试",
-          success: (res) => {
-            res.confirm && this.getAdId();
-          }
+          rewardedVideoAd.show()
         });
-      });
+        rewardedVideoAd.onError((err) => {
+          wx.hideLoading();
+          // sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
+        });
+        rewardedVideoAd.onClose((res) => {
+          res && res.isEnded && this.showWifi();
+        })
+      } else {
+        wx.hideLoading();
+      }
     },
     handleConnect() {
       const { rewardedVideoAd } = this
       rewardedVideoAd && rewardedVideoAd.load().then(() => rewardedVideoAd.show());
     },
-    getWifiConfig() {
+    showWifi() {
       wx.showLoading({
         title: "获取中...",
         mask: true,
       });
       this.wifiAvailable = true;
+      console.log(this.wifiId)
       getWifiConfig({
         uid: this.uid,
+        wifiId: this.wifiId,
       }).then(({ data }) => {
+        console.log('获取wifi配置', data)
         wx.hideLoading();
         this.wifiInfo = data;
-        this.connectWifi();
+        this.connect();
       }, (err) => {
         wx.hideLoading();
         wx.showModal({
@@ -159,6 +156,7 @@ export default {
       });
     },
     startWifi() {
+      console.log('开启wifi')
       return new Promise((resolve, reject) => {
         wx.startWifi({
           success: resolve,
@@ -167,6 +165,7 @@ export default {
       });
     },
     connectWifi() {
+      console.log('连接wifi')
       return new Promise((resolve, reject) => {
         const { wifiInfo } = this;
         wx.connectWifi({
@@ -178,7 +177,7 @@ export default {
         });
       });
     },
-    connectWifi() {
+    connect() {
       if (this.connecting) {
         return;
       }
@@ -195,7 +194,11 @@ export default {
           this.connected = true;
           wx.hideLoading();
           this.adShow = true;
+          sendWifiLog({ wifiId: this.wifiId, status: 1 })
+          console.log("连接成功")
         }).catch((e) => {
+          console.log("连接失败", e)
+          sendWifiLog({ wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
           this.adShow = true;
           wx.hideLoading();
           this.connecting = false;

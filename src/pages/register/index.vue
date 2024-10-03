@@ -17,13 +17,13 @@
           <input v-model.trim="nickName" placeholder="请填写" :maxlength="20" />
         </view>
       </view>
-      <view class="item">
+      <!-- <view class="item">
         <view class="label">手机号码</view>
         <view class="content">
           <input v-model.trim="phone" placeholder="请填写" :maxlength="20" />
         </view>
-      </view>
-      <Button class="button" type="primary" @click="submit" :disabled="isDisabled">点击注册</Button>
+      </view> -->
+      <Button class="button" type="primary" @click="submit">点击注册</Button>
     </div>
   </view>
 </template>
@@ -38,14 +38,25 @@ export default {
     }
   },
   computed: {
-    isDisabled() {
-      return !this.parentUserId || !this.nickName || !this.phone
-    },
   },
-  onLoad({ uid }) {
-    this.parentUserId = uid;
+  onLoad(option) {
+    const params = this.getUrlParams(decodeURIComponent(option.q));
+    this.parentUserId = params.parentId;
   },
   methods: {
+    getUrlParams(url) {
+      let urlStr = url.split('?')[1];
+      // 创建空对象存储参数
+      let obj = {};
+      // 再通过 & 将每一个参数单独分割出来
+      let paramsArr = urlStr.split('&');
+      for (let i = 0, len = paramsArr.length; i < len; i++) {
+        // 再通过 = 将每一个参数分割为 key:value 的形式
+        let arr = paramsArr[i].split('=');
+        obj[arr[0]] = arr[1];
+      }
+      return obj;
+    },
     submit(e) {
       uni.showLoading({
         title: "注册中",
@@ -53,6 +64,7 @@ export default {
       });
       wx.login({
         success: (res) => {
+          console.log(this.parentUserId)
           register({
             parentUserId: this.parentUserId,
             nickName: this.nickName,

@@ -8,36 +8,86 @@
           </view>
           <view class="info">WIFI密码: {{ wifi.pwd }}</view>
           <view class="operate">
-            <button @click="updateWifi(wifi)" size="mini" type="primary">编辑</button>
-            <button @click="previewCode(wifi)" size="mini">生成二维码</button>
+            <button @click="updateWifi(wifi)" size="mini">编辑</button>
+            <button @click="previewCode(wifi)" size="mini">二维码</button>
+            <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button>
           </view>
         </view>
       </scroll-view>
     </view>
     <view class="bottom">
       <button @click="updateWifi(undefined)" type="primary">新增WIFI</button>
-      <view :style="safeBottom"/>
+      <view :style="safeBottom" />
+    </view>
+    <view class="popupView" v-if="popupView">
+      <!-- 遮罩区域，点击隐藏弹出层 -->
+      <view class="close" @click="previewCode"></view>
+      <!-- 内容区 -->
+
+      <view class="content">
+        <view>
+          <text>{{ wifiName }}</text>
+        </view>
+        <view>
+          <image :src="`data:image/png;base64,${preQrcode}`" mode="aspectFit" :show-menu-by-longpress="true"></image>
+        </view>
+      </view>
+      <!-- 遮罩区域，点击隐藏弹出层 -->
+      <view class="close" @click="previewCode"></view>
     </view>
   </view>
 </template>
 <script>
+import { onReady } from '@dcloudio/uni-app';
 import { getWifiConfigList } from '../../services/wifi';
 export default {
   data() {
     return {
       safeBottom: `height: ${uni.getSystemInfoSync().safeAreaInsets.bottom}px`,
       list: [],
+      preQrcode: '',
+      wifiName: '',
+      popupView: false,
+      userId: '',
     }
   },
   computed: {
 
   },
   onShow() {
-    this.getConfigList();
+    // this.getConfigList();
+  },
+  onReady() {
+    uni.setNavigationBarTitle({
+      title: `${this.nickName}的WIFI列表`
+    });
+  },
+  onLoad({ userId, nickName }) {
+    if (nickName) {
+      this.nickName = nickName;
+    } else {
+      this.nickName = "我";
+    }
+    if (userId) {
+      this.userId = userId;
+      this.getConfigList({ userId, userId });
+    } else {
+      this.getConfigList({});
+    }
+  },
+  onPullDownRefresh() {
+    if (this.userId != '') {
+      const userId = this.userId;
+      this.getConfigList({ userId, userId });
+    } else {
+      this.getConfigList({});
+    }
+    // 关闭刷新
+    uni.stopPullDownRefresh();
   },
   methods: {
-    getConfigList (e) {
-      getWifiConfigList().then((res) => {
+    getConfigList(query) {
+      getWifiConfigList(query).then((res) => {
         if (res.code == 0) {
           this.list = res.data;
         }
@@ -49,15 +99,17 @@ export default {
       uni.hideLoading();
     },
     previewCode(item) {
-      wx.previewImage({
-        urls: [item.qrCode]
-      })
+      this.preQrcode = item.qrcode;
+      this.wifiName = item.ssid;
+      this.popupView = !this.popupView;
     },
     updateWifi(wifi) {
       if (!wifi) {
         wifi = { ssid: '', password: '' }
+      } else {
+        wifi = { id: wifi.id, ssid: wifi.ssid, pwd: wifi.pwd }
       }
-      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}`
+      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}&userId=${this.userId}`
       uni.navigateTo({
         url: url
       })
@@ -66,71 +118,79 @@ export default {
 }
 </script>
 <style lang="scss">
-page, .container {
+page,
+.container {
   height: 100%;
 }
+
 .container {
   display: flex;
   flex-direction: column;
+
   button[type="primary"] {
     background-color: $uni-color-primary !important;
   }
+
   .list {
     width: 100%;
     height: 0;
     flex: 1;
+
     .scroll-view {
 
       width: 100%;
       height: 100%;
+
       .item {
         padding: 24rpx;
         line-height: 60rpx;
         border-bottom: 1rpx solid $uni-border-color;
-        .info, .operate {
+
+        .info,
+        .operate {
           display: flex;
           align-items: center;
+
           button {
-            width: 260rpx;
+            width: 150rpx;
           }
         }
       }
     }
   }
+
   .bottom {
     width: 100%;
     padding: 12rpx 0;
     background-color: #fff;
-    box-shadow: 0 0  12px $uni-border-color;
+    box-shadow: 0 0 12px $uni-border-color;
+
     button {
       margin: 0 24rpx;
     }
   }
 }
-// .list {
-//     .item {
-//         margin: 0 48rpx;
-//         display: flex;
-//         align-items: center;
-//         border-bottom: 1px solid #f2f2f2;
-//         line-height: 104rpx;
 
-//         .name {
-//             width: 0;
-//             flex: 1;
-//             white-space: nowrap;
-//             text-overflow: ellipsis;
-//             overflow: hidden;
+.popupView {
+  width: 100vw;
+  height: calc(100vh - 0px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  overflow: hidden;
+}
 
-//             &.bold {
-//                 font-weight: bold;
-//             }
-//         }
+.popupView .close {
+  z-index: 999;
+  flex-grow: 1;
+  background-color: rgba(41, 41, 41, 0.699);
+}
 
-//         .date {
-//             margin-left: 24rpx;
-//             flex-shrink: 0;
-//         }
-//     }
-// }
+.popupView .content {
+  background-color: #f5f5f5;
+  padding: 15rpx;
+  text-align: center;
+}
 </style>

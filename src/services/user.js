@@ -41,3 +41,16 @@ export const resetPwd = (data) =>
     method: 'POST',
     data,
   })
+export const getMyUserList = (data) =>
+  request({
+    url: '/wechat/user/getMyUserList ',
+    method: 'POST',
+    data,
+  })
+
+export const setRate = (data) =>
+  request({
+    url: '/wechat/user/setRate ',
+    method: 'POST',
+    data,
+  })

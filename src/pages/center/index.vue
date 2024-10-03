@@ -2,7 +2,7 @@
   <view class="container">
     <div class="top">
       <text class="iconfont icon-1USER avatar"></text>
-      <text class="welcome">{{ userInfo ? userInfo.nickName: '' }} 欢迎回来</text>
+      <text class="welcome">{{ userInfo ? userInfo.nickName : '' }} 欢迎回来</text>
     </div>
     <div class="form">
       <view>
@@ -18,6 +18,21 @@
         <Button class="button" type="primary" @click="goSetting">个人设置</Button>
       </view>
     </div>
+    <view class="popupView" v-if="popupView">
+      <!-- 遮罩区域，点击隐藏弹出层 -->
+      <view class="close" @click="previewCode"></view>
+      <!-- 内容区 -->
+      <view class="content">
+        <view>我的推广码</view>
+        <view>
+          <image :src="`data:image/png;base64,${userInfo.registerToken}`" mode="aspectFit"
+            :show-menu-by-longpress="true">
+          </image>
+        </view>
+      </view>
+      <!-- 遮罩区域，点击隐藏弹出层 -->
+      <view class="close" @click="previewCode"></view>
+    </view>
   </view>
 </template>
 <script>
@@ -26,21 +41,20 @@ export default {
   data() {
     return {
       userInfo: null,
+      popupView: false,
     }
   },
   onLoad() {
     //通过store获取商户信息
   },
   onShow() {
-    getUserInfo().then(({data}) => {
+    getUserInfo().then(({ data }) => {
       this.userInfo = data;
     })
   },
   methods: {
     previewCode() {
-      wx.previewImage({
-        urls: []
-      })
+      this.popupView = !this.popupView;
     },
     goMyUser() {
       uni.navigateTo({
@@ -133,5 +147,27 @@ page {
       }
     }
   }
+}
+
+.popupView {
+  width: 100vw;
+  height: calc(100vh - 0px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  overflow: hidden;
+}
+
+.popupView .close {
+  flex-grow: 1;
+  background-color: rgba(41, 41, 41, 0.699);
+}
+
+.popupView .content {
+  background-color: #f5f5f5;
+  padding: 15rpx;
+  text-align: center;
 }
 </style>

@@ -14,10 +14,11 @@ export const getWifiConfig = () => (
     method: 'GET',
   })
 )
-export const getWifiConfigList = () => (
+export const getWifiConfigList = (data) => (
   request({
     url: '/client/wifi/configList',
     method: 'GET',
+    data
   })
 )
 export const sendWifiLog = (data) => (

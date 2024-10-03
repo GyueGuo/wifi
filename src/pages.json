@@ -51,19 +51,21 @@
     {
       "path": "pages/user-info/wifiList",
       "style": {
-        "navigationBarTitleText": "我的wifi列表"
+        "navigationBarTitleText": "我的wifi列表",
+        "enablePullDownRefresh": true
       }
     },
     {
       "path": "pages/user-info/updateWifi",
       "style": {
-        "navigationBarTitleText": "更新我的wifi"
+        "navigationBarTitleText": "更新WIFI信息"
       }
     },
     {
       "path": "pages/platform/index",
       "style": {
-        "navigationBarTitleText": "我的商户"
+        "navigationBarTitleText": "我的商户",
+        "enablePullDownRefresh": true
       }
     }
   ],

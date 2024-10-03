@@ -22,6 +22,7 @@
   </view>
 </template>
 <script>
+import { onReady } from '@dcloudio/uni-app';
 import { updateWifiConfig } from '../../services/wifi';
 export default {
   data() {
@@ -30,15 +31,16 @@ export default {
         id: null,
         ssid: '',
         pwd: '',
+        userId: '',
       }
     }
   },
   computed: {
 
   },
-  onLoad({ wifi }) {
-
+  onLoad({ wifi, userId }) {
     this.wifi = JSON.parse(wifi)
+    this.wifi.userId = userId;
   },
   methods: {
     submit: function (e) {

@@ -1,19 +1,19 @@
 <template>
   <view class="wrap">
     <view class="ad-top">
-      <ad v-if="adShow" unit-id="adunit-7370633a9cf12683" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+      <ad v-if="adShow" unit-id="ad1" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
     <text class="iconfont icon-wifi logo" />
     <view v-if="connected" class="button">连接成功</view>
     <view v-else class="button" @click="getAdId">一键连接</view>
     <view class="ad">
-      <ad unit-id="adunit-ea88db8d736dc179" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+      <ad unit-id="ad2" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
     <view class="ad">
-      <ad unit-id="adunit-08db73567f70e5d9" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+      <ad unit-id="ad3" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
     <view class="ad">
-      <ad unit-id="adunit-869b836e8376e47f" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+      <ad unit-id="ad4" ad-type="grid" ad-theme="white" grid-count="5"></ad>
     </view>
 
     <view class="error-modal-wrap" v-show="isModalVisible">
@@ -51,17 +51,16 @@ export default {
       wifiInfo: null,
       wifiAvailable: false,
       isModalVisible: false,
-      ad1: 'adunit-7370633a9cf12683',
-      ad2: 'adunit-84be61a9902ba806',
-      ad3: 'adunit-ea88db8d736dc179',
-      ad4: 'adunit-08db73567f70e5d9',
+      ad1: '',
+      ad2: '',
+      ad3: '',
+      ad4: '',
       adShow: false,
     }
   },
   onLoad(option) {
     console.log(option.q)
-    const url = 'https%3A%2F%2Fapi.congmingxiongdi.com%2Fgo-mp%2Fwifi%3FuserId%3D260%26wifiId%3D2';
-    const params = this.getUrlParams(decodeURIComponent(url));
+    const params = this.getUrlParams(decodeURIComponent(option.q));
     console.log(params);
     this.uid = params.userId;
     this.wifiId = params.wifiId;
@@ -91,8 +90,12 @@ export default {
         uid: this.uid,
       }).then(({ data }) => {
         console.log('获取广告数据', data)
+        this.ad1 = data.videoAdId1;
+        this.ad2 = data.videoAdId2;
+        this.ad3 = data.videoAdId3;
+        this.ad4 = data.videoAdId4;
         if (wx.createRewardedVideoAd) {
-          const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.adUnitId });
+          const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: data.rewardVideoAdId });
           this.rewardedVideoAd = rewardedVideoAd;
           rewardedVideoAd.load().then(() => {
             wx.hideLoading();
@@ -226,50 +229,7 @@ export default {
           });
         },
       });
-    }
-    // connectWifi() {
-    //   let that = this;
-    //   wx.getLocation({
-    //     success: function () {
-    //       wx.startWifi({
-    //         success: function () {
-    //           wx.connectWifi({
-    //             SSID: that.ssid,
-    //             password: that.pwd,
-    //             forceNewApi: true,
-    //             success() {
-    //               console.log('连接成功')
-    //               that.connecting = false;
-    //               that.connected = true;
-    //             },
-    //             fail(e) {
-    //               console.log(e)
-    //               that.connecting = false;
-    //             }
-    //           });
-    //         },
-    //         fail: function (e) {
-    //           console.log(e)
-    //           //连接失败，需要把e.errCode枚举值转换为中文提示
-    //           //https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html
-    //           wx.showModal({
-    //             title: '连接失败',
-    //             content: e.errMsg,
-    //             success: function (res) {
-    //               if (res.confirm) {
-    //                 console.log('');
-    //               } else if (res.cancel) {
-    //                 console.log('用户点击取消');
-    //               }
-    //             }
-    //           });
-    //           this.connecting = false;
-    //         }
-    //       })
-    //     }
-    //   })
-    //   this.connecting = true;
-    // },
+    },
   }
 }
 </script>

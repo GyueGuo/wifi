@@ -1,20 +1,11 @@
 <template>
   <view class="wrap">
-    <view class="ad-top" v-if="ad1">
-      <ad v-if="adShow" :unit-id="ad1" ad-type="grid" ad-theme="white" grid-count="5"></ad>
-    </view>
     <text class="iconfont icon-wifi logo" />
     <view v-if="connected" class="button">连接成功</view>
 
     <view v-else class="button" @click="showAd">一键连接</view>
     <view class="ad" v-if="ad2">
-      <ad v-if="ad2" :unit-id="ad2" ad-type="grid" ad-theme="white" grid-count="5"></ad>
-    </view>
-    <view class="ad" v-if="ad3">
-      <ad v-if="ad3" :unit-id="ad3" ad-type="grid" ad-theme="white" grid-count="5"></ad>
-    </view>
-    <view class="ad" v-if="ad4">
-      <ad v-if="ad4" :unit-id="ad4" ad-type="grid" ad-theme="white" grid-count="5"></ad>
+      <ad v-if="ad2" :unit-id="ad2" ad-theme="white"></ad>
     </view>
 
     <view class="error-modal-wrap" v-show="isModalVisible">
@@ -73,10 +64,10 @@ export default {
     }).then(({ data }) => {
       console.log('获取广告数据', data)
       this.rewardVideoAdId = data.rewardVideoAdId;
-      this.ad1 = data.videoAdId1;
+      // this.ad1 = data.videoAdId1;
       this.ad2 = data.videoAdId2;
-      this.ad3 = data.videoAdId3;
-      this.ad4 = data.videoAdId4;
+      // this.ad3 = data.videoAdId3;
+      // this.ad4 = data.videoAdId4;
     })
   },
   methods: {
@@ -260,7 +251,7 @@ page {
 
   .logo {
     font-size: 260rpx;
-    margin: 15% auto 10%;
+    margin: 40% auto 20%;
   }
 
   .desc {

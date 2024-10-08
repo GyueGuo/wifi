@@ -6,6 +6,12 @@
     <!-- </div> -->
     <div class="form">
       <view class="item">
+        <view class="label">wifi所属</view>
+        <view class="content">
+          <input v-model.trim="wifi.name" placeholder="请填写WIFI所属名称" :maxlength="20" />
+        </view>
+      </view>
+      <view class="item">
         <view class="label">wifi名称</view>
         <view class="content">
           <input v-model.trim="wifi.ssid" placeholder="请填写WIFI名称" :maxlength="20" />
@@ -29,6 +35,7 @@ export default {
     return {
       wifi: {
         id: null,
+        name: '',
         ssid: '',
         pwd: '',
         userId: '',
@@ -38,9 +45,12 @@ export default {
   computed: {
 
   },
-  onLoad({ wifi, userId }) {
+  onLoad({ wifi, userId, nickName }) {
     this.wifi = JSON.parse(wifi)
     this.wifi.userId = userId;
+    if (nickName) {
+      this.name = nickName;
+    }
   },
   methods: {
     submit: function (e) {

@@ -1,8 +1,12 @@
 <template>
   <view class="container">
     <view class="list">
-      <scroll-view class="scroll-view" scroll-y @scrolltolower="loadMore">
+      <scroll-view class="scroll-view" scroll-y @refresherrefresh="loadMore" refresher-enabled
+        :refresher-triggered="refresh">
         <view class="item" v-for="(wifi, index ) in list" :key="index">
+          <view class="info">
+            WIFI所属: {{ wifi.name }}
+          </view>
           <view class="info">
             WIFI名称: {{ wifi.ssid }}
           </view>
@@ -49,6 +53,8 @@ export default {
       wifiName: '',
       popupView: false,
       userId: '',
+      nickName: '',
+      refresh: false,
     }
   },
   computed: {
@@ -76,14 +82,14 @@ export default {
     }
   },
   onPullDownRefresh() {
-    if (this.userId != '') {
-      const userId = this.userId;
-      this.getConfigList({ userId, userId });
-    } else {
-      this.getConfigList({});
-    }
-    // 关闭刷新
-    uni.stopPullDownRefresh();
+    // if (this.userId != '') {
+    //   const userId = this.userId;
+    //   this.getConfigList({ userId, userId });
+    // } else {
+    //   this.getConfigList({});
+    // }
+    // // 关闭刷新
+    // uni.stopPullDownRefresh();
   },
   methods: {
     getConfigList(query) {
@@ -91,6 +97,11 @@ export default {
         if (res.code == 0) {
           this.list = res.data;
         }
+        setTimeout(() => {
+          if (this.refresh) {
+            this.refresh = false;
+          }
+        }, 50)
       })
       uni.showLoading({
         title: "保存中",
@@ -109,10 +120,20 @@ export default {
       } else {
         wifi = { id: wifi.id, ssid: wifi.ssid, pwd: wifi.pwd }
       }
-      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}&userId=${this.userId}`
+      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}&userId=${this.userId}&nickName=${this.nickName}`
       uni.navigateTo({
         url: url
       })
+    },
+    loadMore() {
+      console.log("11111")
+      this.refresh = true;
+      if (this.userId != '') {
+        const userId = this.userId;
+        this.getConfigList({ userId, userId });
+      } else {
+        this.getConfigList({});
+      }
     }
   }
 }

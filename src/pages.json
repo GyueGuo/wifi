@@ -51,8 +51,8 @@
     {
       "path": "pages/user-info/wifiList",
       "style": {
-        "navigationBarTitleText": "我的WIFI列表",
-        "enablePullDownRefresh": true
+        "navigationBarTitleText": "我的WIFI列表"
+        // "enablePullDownRefresh": true
       }
     },
     {
@@ -64,8 +64,8 @@
     {
       "path": "pages/platform/index",
       "style": {
-        "navigationBarTitleText": "我的商户",
-        "enablePullDownRefresh": true
+        "navigationBarTitleText": "我的商户"
+        // "enablePullDownRefresh": true
       }
     }
   ],

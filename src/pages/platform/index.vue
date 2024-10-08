@@ -1,5 +1,6 @@
 <template>
-  <scroll-view class="container" scroll-y @scrolltolower="loadMore">
+  <scroll-view class="container" scroll-y refresher-enabled @scrolltolower="loadMore"
+    @refresherrefresh="onRefresherrefresh" :refresher-triggered="refresh">
     <view class="item">
       <div class="name">名称</div>
       <div class="date">分成比例</div>
@@ -36,6 +37,7 @@ export default {
       isLoading: false,
       isNoMore: false,
       pageNo: 0,
+      refresh: undefined,
     }
   },
   created() {
@@ -79,7 +81,12 @@ export default {
         if (page.pages <= pageNo) {
           this.isNoMore = true;
         }
-
+        setTimeout(() => {
+          console.log("123")
+          if (this.refresh) {
+            this.refresh = false;
+          }
+        }, 100);
       })
     },
     edit(item) {
@@ -112,6 +119,11 @@ export default {
           }
         }
       })
+    },
+    onRefresherrefresh() {
+      this.refresh = true;
+      this.isLoading = false;
+      this.getList(1);
     },
     loadMore() {
       if (this.isNoMore) {

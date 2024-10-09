@@ -26,6 +26,15 @@
       }
     },
     {
+      "path": "pages/wifi/index2",
+      "style": {
+        "navigationBarTitleText": "wifi连接",
+        "navigationBarTextStyle": "#fff",
+        "navigationBarBackgroundColor": "#007aff",
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录",

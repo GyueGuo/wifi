@@ -14,7 +14,7 @@
           <view class="operate">
             <button @click="updateWifi(wifi)" size="mini">编辑</button>
             <button @click="previewCode(wifi)" size="mini">二维码</button>
-            <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button>
+            <!-- <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button> -->
           </view>
         </view>
       </scroll-view>
@@ -65,14 +65,14 @@ export default {
   },
   onReady() {
     uni.setNavigationBarTitle({
-      title: `${this.nickName}的WIFI列表`
+      title: `${this.nickName}WIFI列表`
     });
   },
   onLoad({ userId, nickName }) {
     if (nickName) {
       this.nickName = nickName;
     } else {
-      this.nickName = "我";
+      this.nickName = "";
     }
     if (userId) {
       this.userId = userId;
@@ -116,11 +116,11 @@ export default {
     },
     updateWifi(wifi) {
       if (!wifi) {
-        wifi = { ssid: '', password: '' }
+        wifi = { ssid: '', password: '', name: this.nickName }
       } else {
-        wifi = { id: wifi.id, ssid: wifi.ssid, pwd: wifi.pwd }
+        wifi = { id: wifi.id, ssid: wifi.ssid, pwd: wifi.pwd, name: this.nickName }
       }
-      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}&userId=${this.userId}&nickName=${this.nickName}`
+      const url = `/pages/user-info/updateWifi?wifi=${JSON.stringify(wifi)}&userId=${this.userId}`
       uni.navigateTo({
         url: url
       })

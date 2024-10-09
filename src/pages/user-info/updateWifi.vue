@@ -45,12 +45,9 @@ export default {
   computed: {
 
   },
-  onLoad({ wifi, userId, nickName }) {
+  onLoad({ wifi, userId }) {
     this.wifi = JSON.parse(wifi)
     this.wifi.userId = userId;
-    if (nickName) {
-      this.name = nickName;
-    }
   },
   methods: {
     submit: function (e) {

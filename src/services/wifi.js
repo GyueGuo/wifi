@@ -36,3 +36,18 @@ export const updateWifiConfig = (data) => (
     data,
   })
 )
+export const getQrcode = (data) => (
+  request({
+    url: '/client/wifi/getQrcode',
+    method: 'GET',
+    data
+  })
+)
+
+export const deleteWifi = (data) => (
+  request({
+    url: '/client/wifi/deleteWifiConfig',
+    method: 'GET',
+    data
+  })
+)

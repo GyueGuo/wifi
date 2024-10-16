@@ -13,8 +13,8 @@
           <view class="info">WIFI密码: {{ wifi.pwd }}</view>
           <view class="operate">
             <button @click="updateWifi(wifi)" size="mini">编辑</button>
-            <button @click="previewCode(wifi)" size="mini">二维码</button>
-            <!-- <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button> -->
+            <button @click="showQrcode(wifi)" size="mini">二维码</button>
+            <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button>
           </view>
         </view>
       </scroll-view>
@@ -43,7 +43,7 @@
 </template>
 <script>
 import { onReady } from '@dcloudio/uni-app';
-import { getWifiConfigList } from '../../services/wifi';
+import { getWifiConfigList, getQrcode, deleteWifi } from '../../services/wifi';
 export default {
   data() {
     return {
@@ -125,8 +125,31 @@ export default {
         url: url
       })
     },
+    showQrcode(wifi) {
+      getQrcode({ id: wifi.id }).then((result) => {
+        if (result.data) {
+          this.wifiName = wifi.ssid
+          this.preQrcode = result.data;
+        }
+      })
+    },
+    deleteConfig(wifi) {
+      uni.showModal({
+        title: '删除确认',
+        content: `是否要删除[${wifi.ssid}]?`,
+        success: function (res) {
+          if (res.confirm) {
+            deleteWifi({ id: wifi.id }).then((result) => {
+              uni.showToast({
+                title: `${result.code == 0 ? '删除成功' : '删除失败'}`,
+                duration: 1000
+              });
+            })
+          }
+        }
+      });
+    },
     loadMore() {
-      console.log("11111")
       this.refresh = true;
       if (this.userId != '') {
         const userId = this.userId;

@@ -54,20 +54,14 @@ export default {
   onLoad(option) {
     console.log(option.q)
     const params = this.getUrlParams(decodeURIComponent(option.q));
-    console.log(params);
     this.uid = params.userId;
     this.wifiId = params.wifiId;
     this.rewardedVideoAd = null;
-    // this.getWifiConfig();
     getAdId({
       uid: this.uid,
     }).then(({ data }) => {
-      console.log('获取广告数据', data)
       this.rewardVideoAdId = data.rewardVideoAdId;
-      // this.ad1 = data.videoAdId1;
       this.ad2 = data.videoAdId2;
-      // this.ad3 = data.videoAdId3;
-      // this.ad4 = data.videoAdId4;
     })
   },
   methods: {
@@ -98,7 +92,6 @@ export default {
         });
         rewardedVideoAd.onError((err) => {
           wx.hideLoading();
-          // sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
         });
         rewardedVideoAd.onClose((res) => {
           res && res.isEnded && this.showWifi();
@@ -142,21 +135,23 @@ export default {
       return new Promise((resolve, reject) => {
         wx.getLocation({
           success: resolve,
-          fail: reject
+          fail: (error) => {
+            reject({ type: 'getLocation', failMsg: JSON.stringify(error) })
+          }
         });
       });
     },
     startWifi() {
-      console.log('开启wifi')
       return new Promise((resolve, reject) => {
         wx.startWifi({
           success: resolve,
-          fail: reject
+          fail: (error) => {
+            reject({ type: 'startWifi', failMsg: JSON.stringify(error) })
+          }
         });
       });
     },
     connectWifi() {
-      console.log('连接wifi')
       return new Promise((resolve, reject) => {
         const { wifiInfo } = this;
         wx.connectWifi({
@@ -164,7 +159,9 @@ export default {
           password: wifiInfo.pwd,
           forceNewApi: true,
           success: resolve,
-          fail: reject
+          fail: (error) => {
+            reject({ type: 'connectWifi', failMsg: JSON.stringify(error) })
+          }
         });
       });
     },
@@ -184,23 +181,40 @@ export default {
           this.connecting = false;
           this.connected = true;
           wx.hideLoading();
-          this.adShow = true;
           sendWifiLog({ wifiId: this.wifiId, status: 1 })
-          console.log("连接成功")
         }).catch((e) => {
-          console.log("连接失败", e)
-          sendWifiLog({ wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
-          this.adShow = true;
           wx.hideLoading();
-          this.connecting = false;
-          if (this.wifiInfo) {
-            this.isModalVisible = true;
-          } else {
-            wx.showModal({
-              title: '连接失败',
-              content: e?.errMsg || '',
+          let status = 0;
+          if (e.errCode == '12004') {
+            //重复连接wifi则查询当前wifi连接情况，如果匹配则认为连接成功，向后台报一个连接成功但返回失败的状态
+            wx.getConnectedWifi({
+              partialInfo: true,
+              success: (data) => {
+                if (data.SSID == this.wifiInfo.ssid) {
+                  status = 2
+                  this.connecting = false;
+                  return;
+                }
+              }
+            })
+          } else if (e.errCode = '12006') {
+            uni.showToast({
+              title: `请打开GPS定位后再尝试连接`,
+              duration: 2000
             });
+            return;
+          } else {
+            this.connecting = false;
+            if (this.wifiInfo) {
+              this.isModalVisible = true;
+            } else {
+              wx.showModal({
+                title: '连接失败',
+                content: e?.errMsg || '',
+              });
+            }
           }
+          sendWifiLog({ ...e, wifiId: this.wifiId, status: status })
         });
     },
     handleCloseModal() {

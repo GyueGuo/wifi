@@ -51,11 +51,6 @@ export default {
       adShow: false,
     }
   },
-<<<<<<< HEAD
-  onLoad(option) {
-    console.log(option.q)
-    const params = this.getUrlParams(decodeURIComponent(option.q));
-=======
   onReady() {
     wx.getSetting({
       success(res) {
@@ -78,31 +73,28 @@ export default {
       }
     })
   },
-  onLoad({ q }) {
-    console.log(q)
-    const params = this.getUrlParams(decodeURIComponent(q));
+  onLoad({ scene }) {
+    console.log(scene)
+    const params = this.getUrlParams(decodeURIComponent(scene));
     console.log('接收参数:', params);
->>>>>>> b620131 (feat:增加新wifi页)
     this.uid = params.userId;
     this.wifiId = params.wifiId;
     this.rewardedVideoAd = null;
+    // this.getWifiConfig();
     getAdId({
       uid: this.uid,
     }).then(({ data }) => {
+      console.log('获取广告数据', data)
       this.rewardVideoAdId = data.rewardVideoAdId;
-<<<<<<< HEAD
-      this.ad2 = data.videoAdId2;
-=======
       this.ad1 = data.videoAdId1;
       // this.ad2 = data.videoAdId2;
       // this.ad3 = data.videoAdId3;
       // this.ad4 = data.videoAdId4;
->>>>>>> b620131 (feat:增加新wifi页)
     })
   },
   methods: {
     getUrlParams(url) {
-      let urlStr = url.split('?')[1];
+      let urlStr = url;
       // 创建空对象存储参数
       let obj = {};
       // 再通过 & 将每一个参数单独分割出来
@@ -128,6 +120,7 @@ export default {
         });
         rewardedVideoAd.onError((err) => {
           wx.hideLoading();
+          // sendWifiLog({ adUnitId: data.adUnitId, userId: this.uid, ...err })
         });
         rewardedVideoAd.onClose((res) => {
           res && res.isEnded && this.showWifi();
@@ -171,36 +164,19 @@ export default {
       return new Promise((resolve, reject) => {
         wx.getLocation({
           success: resolve,
-          fail: (error) => {
-            reject({ type: 'getLocation', failMsg: JSON.stringify(error) })
-          }
+          fail: reject
         });
       });
     },
     startWifi() {
+      console.log('开启wifi')
       return new Promise((resolve, reject) => {
         wx.startWifi({
           success: resolve,
-          fail: (error) => {
-            reject({ type: 'startWifi', failMsg: JSON.stringify(error) })
-          }
+          fail: reject
         });
       });
     },
-<<<<<<< HEAD
-    connectWifi() {
-      return new Promise((resolve, reject) => {
-        const { wifiInfo } = this;
-        wx.connectWifi({
-          SSID: wifiInfo.ssid,
-          password: wifiInfo.pwd,
-          forceNewApi: true,
-          success: resolve,
-          fail: (error) => {
-            reject({ type: 'connectWifi', failMsg: JSON.stringify(error) })
-          }
-        });
-=======
     getWifiList() {
       return new Promise((resolve, reject) => {
         wx.getWifiList({
@@ -259,7 +235,6 @@ export default {
             });
           }
         }
->>>>>>> b620131 (feat:增加新wifi页)
       });
     },
     connect() {
@@ -271,53 +246,8 @@ export default {
         title: "连接中...",
         mask: true,
       });
-<<<<<<< HEAD
-      this.getLocation()
-        .then(() => this.startWifi())
-        .then(() => (this.connectWifi()))
-        .then(() => {
-          this.connecting = false;
-          this.connected = true;
-          wx.hideLoading();
-          sendWifiLog({ wifiId: this.wifiId, status: 1 })
-        }).catch((e) => {
-          wx.hideLoading();
-          let status = 0;
-          if (e.errCode == '12004') {
-            //重复连接wifi则查询当前wifi连接情况，如果匹配则认为连接成功，向后台报一个连接成功但返回失败的状态
-            wx.getConnectedWifi({
-              partialInfo: true,
-              success: (data) => {
-                if (data.SSID == this.wifiInfo.ssid) {
-                  status = 2
-                  this.connecting = false;
-                  return;
-                }
-              }
-            })
-          } else if (e.errCode = '12006') {
-            uni.showToast({
-              title: `请打开GPS定位后再尝试连接`,
-              duration: 2000
-            });
-            return;
-          } else {
-            this.connecting = false;
-            if (this.wifiInfo) {
-              this.isModalVisible = true;
-            } else {
-              wx.showModal({
-                title: '连接失败',
-                content: e?.errMsg || '',
-              });
-            }
-          }
-          sendWifiLog({ ...e, wifiId: this.wifiId, status: status })
-        });
-=======
       this.startWifi()
         .then((this.getWifiList()));
->>>>>>> b620131 (feat:增加新wifi页)
     },
     handleCloseModal() {
       this.isModalVisible = false;

@@ -9,8 +9,9 @@
         <text class="totalAmount">余额:{{ totalAmount || 0 }}元</text>
       </view> -->
     </view>
-    <view>
-      <text class="middle">历史收益</text>
+    <view class="middle">
+      <text class="left">可提收益：11111.11元</text>
+      <text class="right">已提现：11111.11元</text>
     </view>
     <view class="list">
       <view class="item">
@@ -37,6 +38,8 @@ export default {
       totalAmount: "*",
       yesterdayAmount: "*",
       isNoMore: false,
+      pageNo: 1,
+      pageSize: 20,
       list: [
 
       ]
@@ -65,23 +68,30 @@ export default {
     // });
   },
   mounted() {
-    getMyReport().then((res) => {
-      if (res.code == 0) {
-        this.list = res.data.rows;
-        this.totalAmount = res.data.totalAmount;
-        this.yesterdayAmount = res.data.yesterdayAmount;
-      }
-      console.log(res);
-    }, (err) => {
-      console.log(err);
-    });
+    this.loadData();
   },
   onReachBottom() {
-    this.loadMore();
+    if (this.isNoMore) {
+      return;
+    }
+    this.pageNo++
+    this.loadData();
   },
   methods: {
-    loadMore() {
-      console.log('onReachBottom');
+    loadData() {
+      getMyReport().then((res) => {
+        if (res.code == 0) {
+          if (res.data.rows.length < 20) {
+            this.isNoMore = true;
+          }
+          this.list.push(res.data.rows);
+          this.totalAmount = res.data.totalAmount;
+          this.yesterdayAmount = res.data.yesterdayAmount;
+        }
+        console.log(res);
+      }, (err) => {
+        console.log(err);
+      });
     }
   }
 }
@@ -124,20 +134,21 @@ export default {
 }
 
 .middle {
-  display: flex;
+  display: flow-root;
   align-items: center;
   justify-content: space-between;
   padding: 0 48rpx;
   background-color: rgba(0, 122, 255, 0.8);
   color: $uni-text-color-inverse;
   line-height: 80rpx;
-  font-size: 36rpx;
+  font-size: 28rpx;
 
-  .date-show {
-    font-weight: bold;
-    font-size: 40rpx;
-    padding: 24rpx 0 0 48rpx;
-    color: $uni-color-primary;
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
   }
 }
 

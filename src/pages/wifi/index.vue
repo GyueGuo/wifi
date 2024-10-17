@@ -4,7 +4,7 @@
     <view v-if="connected" class="button">连接成功</view>
 
     <view v-else class="button" @click="showAd">一键连接</view>
-    <view class="ad" v-if="ad1">
+    <view class="ad-modal" v-if="ad1">
       <ad v-if="ad1" :unit-id="ad1" ad-theme="white"></ad>
     </view>
 
@@ -48,18 +48,13 @@ export default {
       ad2: undefined,
       ad3: undefined,
       ad4: undefined,
-      adShow: false,
+      rewardVideo: undefined,
+      nextAd: false
     }
   },
-<<<<<<< HEAD
-  onLoad(option) {
-    console.log(option.q)
-    const params = this.getUrlParams(decodeURIComponent(option.q));
-=======
   onReady() {
     wx.getSetting({
       success(res) {
-        console.log('setting', res)
         if (!res.authSetting['scope.userLocation']) {
           // 申请获取地理位置权限
           wx.authorize({
@@ -79,25 +74,14 @@ export default {
     })
   },
   onLoad({ q }) {
-    console.log(q)
     const params = this.getUrlParams(decodeURIComponent(q));
-    console.log('接收参数:', params);
->>>>>>> b620131 (feat:增加新wifi页)
     this.uid = params.userId;
     this.wifiId = params.wifiId;
-    this.rewardedVideoAd = null;
     getAdId({
       uid: this.uid,
     }).then(({ data }) => {
       this.rewardVideoAdId = data.rewardVideoAdId;
-<<<<<<< HEAD
-      this.ad2 = data.videoAdId2;
-=======
       this.ad1 = data.videoAdId1;
-      // this.ad2 = data.videoAdId2;
-      // this.ad3 = data.videoAdId3;
-      // this.ad4 = data.videoAdId4;
->>>>>>> b620131 (feat:增加新wifi页)
     })
   },
   methods: {
@@ -119,26 +103,27 @@ export default {
         title: "获取中...",
         mask: true,
       });
-      if (wx.createRewardedVideoAd) {
-        const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: this.rewardVideoAdId });
-        this.rewardedVideoAd = rewardedVideoAd;
-        rewardedVideoAd.load().then(() => {
-          wx.hideLoading();
-          rewardedVideoAd.show()
-        });
-        rewardedVideoAd.onError((err) => {
-          wx.hideLoading();
-        });
-        rewardedVideoAd.onClose((res) => {
-          res && res.isEnded && this.showWifi();
-        })
+      if (!this.rewardVideo) {
+        if (wx.createRewardedVideoAd) {
+          const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: this.rewardVideoAdId });
+          rewardedVideoAd.load().then(() => {
+            wx.hideLoading();
+            rewardedVideoAd.show();
+          });
+          rewardedVideoAd.onError((err) => {
+            wx.hideLoading();
+          });
+          rewardedVideoAd.onClose((res) => {
+            res && res.isEnded && this.showWifi();
+          })
+          this.rewardVideo = rewardedVideoAd;
+        }
       } else {
-        wx.hideLoading();
+        this.rewardVideo.load().then(() => {
+          wx.hideLoading();
+          this.rewardVideo.show();
+        });
       }
-    },
-    handleConnect() {
-      const { rewardedVideoAd } = this
-      rewardedVideoAd && rewardedVideoAd.load().then(() => rewardedVideoAd.show());
     },
     showWifi() {
       wx.showLoading({
@@ -167,78 +152,21 @@ export default {
         });
       });
     },
-    getLocation() {
-      return new Promise((resolve, reject) => {
-        wx.getLocation({
-          success: resolve,
-          fail: (error) => {
-            reject({ type: 'getLocation', failMsg: JSON.stringify(error) })
-          }
-        });
-      });
-    },
     startWifi() {
       return new Promise((resolve, reject) => {
         wx.startWifi({
           success: resolve,
           fail: (error) => {
-            reject({ type: 'startWifi', failMsg: JSON.stringify(error) })
+            console.log('开启wifi失败')
+            reject({ type: 'startWifi', ...error })
           }
         });
       });
     },
-<<<<<<< HEAD
-    connectWifi() {
-      return new Promise((resolve, reject) => {
-        const { wifiInfo } = this;
-        wx.connectWifi({
-          SSID: wifiInfo.ssid,
-          password: wifiInfo.pwd,
-          forceNewApi: true,
-          success: resolve,
-          fail: (error) => {
-            reject({ type: 'connectWifi', failMsg: JSON.stringify(error) })
-          }
-        });
-=======
     getWifiList() {
       return new Promise((resolve, reject) => {
         wx.getWifiList({
-          success: (res) => {
-            wx.onGetWifiList(res1 => {
-              console.log(res1)
-              if (res1.wifiList.length !== 0) {
-                this.connectWifi(res1).then(() => {
-                  this.connecting = false;
-                  this.connected = true;
-                  wx.hideLoading();
-                  this.adShow = true;
-                  sendWifiLog({ wifiId: this.wifiId, status: 1 })
-                  console.log("连接成功")
-                  wx.hideLoading({})
-                }).catch((e) => {
-                  console.log("连接失败", e)
-                  sendWifiLog({ wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
-                  this.adShow = true;
-                  wx.hideLoading();
-                  this.connecting = false;
-                  if (this.wifiInfo) {
-                    this.isModalVisible = true;
-                  } else {
-                    wx.showModal({
-                      title: '连接失败',
-                      content: e?.errMsg || '',
-                    });
-                  }
-                });
-              } else {
-                wx.showToast({
-                  title: '暂无可连接wifi,请重试',
-                  icon: 'none'
-                })
-              }
-            })
-          },
+          success: resolve,
           fail: reject
         })
       })
@@ -250,16 +178,18 @@ export default {
         for (const index in res.wifiList) {
           const wifi = res.wifiList[index];
           if (wifi.SSID == this.wifiInfo.ssid) {
+            this.wifiInfo.bssid = wifi.BSSID;
             wx.connectWifi({
               SSID: wifi.SSID,
               BSSID: wifi.BSSID,
               password: wifiInfo.pwd,
               success: resolve,
-              fail: reject
+              fail: (error) => {
+                reject({ ...error, type: 'connectWifi' });
+              }
             });
           }
         }
->>>>>>> b620131 (feat:增加新wifi页)
       });
     },
     connect() {
@@ -271,65 +201,81 @@ export default {
         title: "连接中...",
         mask: true,
       });
-<<<<<<< HEAD
-      this.getLocation()
-        .then(() => this.startWifi())
-        .then(() => (this.connectWifi()))
-        .then(() => {
-          this.connecting = false;
-          this.connected = true;
-          wx.hideLoading();
-          sendWifiLog({ wifiId: this.wifiId, status: 1 })
-        }).catch((e) => {
-          wx.hideLoading();
-          let status = 0;
-          if (e.errCode == '12004') {
-            //重复连接wifi则查询当前wifi连接情况，如果匹配则认为连接成功，向后台报一个连接成功但返回失败的状态
-            wx.getConnectedWifi({
-              partialInfo: true,
-              success: (data) => {
-                if (data.SSID == this.wifiInfo.ssid) {
-                  status = 2
-                  this.connecting = false;
-                  return;
-                }
-              }
-            })
-          } else if (e.errCode = '12006') {
-            uni.showToast({
-              title: `请打开GPS定位后再尝试连接`,
-              duration: 2000
-            });
-            return;
-          } else {
-            this.connecting = false;
-            if (this.wifiInfo) {
-              this.isModalVisible = true;
-            } else {
-              wx.showModal({
-                title: '连接失败',
-                content: e?.errMsg || '',
-              });
-            }
-          }
-          sendWifiLog({ ...e, wifiId: this.wifiId, status: status })
-        });
-=======
       this.startWifi()
-        .then((this.getWifiList()));
->>>>>>> b620131 (feat:增加新wifi页)
+        .then(() => this.onWifiList())
+        .then(() => this.getWifiList())
+        .catch((e) => {
+          console.log('连接失败', e)
+          wx.hideLoading()
+        });
+    },
+    onWifiList() {
+      return new Promise((resolve, reject) => {
+        wx.onGetWifiList(res1 => {
+          console.log(res1)
+          if (res1.wifiList.length !== 0) {
+            this.connectWifi(res1).then(() => {
+              this.connecting = false;
+              this.connected = true;
+              wx.hideLoading();
+              sendWifiLog({ wifiId: this.wifiId, status: 1 })
+            }).catch((e) => {
+              console.log(e)
+              wx.hideLoading();
+              if (e.errCode == '12004') {
+                console.log('重复连接')
+                this.connecting = false;
+                this.connected = true;
+                sendWifiLog({ wifiId: this.wifiId, status: 2, failMsg: JSON.stringify(e) })
+                return;
+              }
+              sendWifiLog({ wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
+              this.adShow = true;
+              this.connecting = false;
+              if (this.wifiInfo) {
+                this.isModalVisible = true;
+              } else {
+                wx.showModal({
+                  title: '连接失败',
+                  content: e?.errMsg || '',
+                });
+              }
+            });
+          } else {
+            wx.showToast({
+              title: '暂无可连接wifi,请重试',
+              icon: 'none'
+            })
+          }
+        })
+        resolve();
+      })
     },
     handleCloseModal() {
       this.isModalVisible = false;
     },
     handleCopy() {
+      const that = this;
       wx.setClipboardData({
         data: this.wifiInfo.pwd,
         success(res) {
           wx.showToast({
-            title: '复制失败',
+            title: '复制成功',
             icon: 'success',
-            duration: 2000
+            duration: 2000,
+            success: () => {
+              setTimeout(() => {
+                wx.connectWifi({
+                  SSID: that.wifiInfo.ssid,
+                  BSSID: that.wifiInfo.bssid,
+                  password: that.wifiInfo.pwd,
+                  maunal: true,
+                  fail: (error) => {
+                    console.log('跳转失败')
+                  }
+                });
+              }, 1000);
+            }
           });
         },
         fail() {
@@ -349,14 +295,6 @@ page {
   height: 100%;
 }
 
-.ad-top {
-  margin-top: 160rpx;
-}
-
-.ad {
-  margin-top: 22rpx;
-}
-
 .wrap {
   height: 100%;
   display: flex;
@@ -367,7 +305,7 @@ page {
 
   .logo {
     font-size: 260rpx;
-    margin: 40% auto 20%;
+    margin: 50% auto 20%;
   }
 
   .desc {
@@ -388,13 +326,7 @@ page {
 }
 
 .ad-modal {
-  z-index: 100;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
+  margin-top: 200rpx;
 
   ad {
     width: 100%;

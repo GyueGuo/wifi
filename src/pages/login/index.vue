@@ -28,7 +28,7 @@ export default {
 		return {
 			code: '',
 			loginConfig: false,
-			version: '1.0.4',
+			version: '1.0.5',
 			loginKey: ''
 		}
 	},

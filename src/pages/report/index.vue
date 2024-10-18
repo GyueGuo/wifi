@@ -10,8 +10,8 @@
       </view> -->
     </view>
     <view class="middle">
-      <text class="left">可提收益：11111.11元</text>
-      <text class="right">已提现：11111.11元</text>
+      <text class="left">可提收益：{{ totalAmount }}元</text>
+      <text class="right">已提现：{{ withdrawalAmount }}元</text>
     </view>
     <view class="list">
       <view class="item">
@@ -37,6 +37,7 @@ export default {
     return {
       totalAmount: "*",
       yesterdayAmount: "*",
+      withdrawalAmount: "*",
       isNoMore: false,
       pageNo: 1,
       pageSize: 20,
@@ -79,14 +80,15 @@ export default {
   },
   methods: {
     loadData() {
-      getMyReport().then((res) => {
+      getMyReport({ pageNo: this.pageNo, pageSize: this.pageSize }).then((res) => {
         if (res.code == 0) {
-          if (res.data.rows.length < 20) {
+          if (res.data.rows.length < this.pageSize) {
             this.isNoMore = true;
           }
-          this.list.push(res.data.rows);
+          this.list = this.list.concat(res.data.rows);
           this.totalAmount = res.data.totalAmount;
           this.yesterdayAmount = res.data.yesterdayAmount;
+          this.withdrawalAmount = res.data.withdrawalAmount;
         }
         console.log(res);
       }, (err) => {

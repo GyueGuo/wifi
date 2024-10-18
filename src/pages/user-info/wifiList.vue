@@ -14,7 +14,7 @@
           <view class="operate">
             <button @click="updateWifi(wifi)" size="mini">编辑</button>
             <button @click="showQrcode(wifi)" size="mini">二维码</button>
-            <button @click="updateWifi(wifi)" size="mini" type="warn">删除</button>
+            <button @click="deleteConfig(wifi)" size="mini" type="warn">删除</button>
           </view>
         </view>
       </scroll-view>
@@ -76,7 +76,7 @@ export default {
     }
     if (userId) {
       this.userId = userId;
-      this.getConfigList({ userId, userId });
+      this.getConfigList({ userId: userId });
     } else {
       this.getConfigList({});
     }
@@ -129,11 +129,13 @@ export default {
       getQrcode({ id: wifi.id }).then((result) => {
         if (result.data) {
           this.wifiName = wifi.ssid
-          this.preQrcode = result.data;
+          this.preQrcode = result.data.qrcode;
+          this.popupView = true;
         }
       })
     },
     deleteConfig(wifi) {
+      const that = this;
       uni.showModal({
         title: '删除确认',
         content: `是否要删除[${wifi.ssid}]?`,
@@ -145,6 +147,11 @@ export default {
                 duration: 1000
               });
             })
+            if (this.userId) {
+              that.getConfigList({ userId: that.userId });
+            } else {
+              that.getConfigList({});
+            }
           }
         }
       });

@@ -183,6 +183,7 @@ export default {
               SSID: wifi.SSID,
               BSSID: wifi.BSSID,
               password: wifiInfo.pwd,
+              forceNewApi: true,
               success: resolve,
               fail: (error) => {
                 reject({ ...error, type: 'connectWifi' });

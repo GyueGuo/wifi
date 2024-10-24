@@ -269,6 +269,7 @@ export default {
                   SSID: that.wifiInfo.ssid,
                   BSSID: that.wifiInfo.bssid,
                   password: that.wifiInfo.pwd,
+                  forceNewApi: true,
                   maunal: true,
                   fail: (error) => {
                     console.log('跳转失败')

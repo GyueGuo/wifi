@@ -22,13 +22,22 @@ export const getWifiConfigList = (data) => (
     data
   })
 )
-export const sendWifiLog = (data) => (
+export const sendWifiLog = (data) => {
+  console.log('上报连接日志')
   request({
     url: '/client/wifi/log',
     method: 'POST',
     data,
   })
-)
+}
+export const sendWifiLog2 = (data) => {
+  console.log('上报连接日志')
+  request({
+    url: '/client/wifi/log2',
+    method: 'POST',
+    data,
+  })
+}
 export const updateWifiConfig = (data) => (
   request({
     url: '/client/wifi/updateWifiConfig',

@@ -4,15 +4,15 @@
       "path": "pages/report/index",
       "style": {
         "navigationBarTitleText": "收益",
-        "navigationBarTextStyle": "#fff",
-        "navigationBarBackgroundColor": "#007aff"
+        "navigationBarTextStyle": "black",
+        "navigationBarBackgroundColor": "#ffffff"
       }
     },
     {
       "path": "pages/center/index",
       "style": {
         "navigationBarTitleText": "个人中心",
-        "navigationBarTextStyle": "#fff",
+        "navigationBarTextStyle": "#007aff",
         "navigationBarBackgroundColor": "#007aff"
       }
     },
@@ -29,7 +29,7 @@
       "path": "pages/wifi/index2",
       "style": {
         "navigationBarTitleText": "wifi连接",
-        "navigationBarTextStyle": "#fff",
+        "navigationBarTextStyle": "#007aff",
         "navigationBarBackgroundColor": "#007aff",
         "navigationStyle": "custom"
       }
@@ -38,7 +38,7 @@
       "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录",
-        "navigationBarBackgroundColor": "#fff",
+        "navigationBarBackgroundColor": "#007aff",
         "navigationStyle": "custom"
       }
     },
@@ -46,7 +46,7 @@
       "path": "pages/register/index",
       "style": {
         "navigationBarTitleText": "注册",
-        "navigationBarTextStyle": "#fff",
+        "navigationBarTextStyle": "#007aff",
         "navigationBarBackgroundColor": "#007aff",
         "navigationStyle": "custom"
       }
@@ -75,6 +75,22 @@
       "style": {
         "navigationBarTitleText": "我的商户"
         // "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/pay/index",
+      "style": {
+        "navigationBarTitleText": "提现",
+        "navigationBarTextStyle": "black",
+        "navigationBarBackgroundColor": "#ffffff"
+      }
+    },
+    {
+      "path": "pages/pay/pay-list",
+      "style": {
+        "navigationBarTitleText": "提现记录列表",
+        "navigationBarTextStyle": "black",
+        "navigationBarBackgroundColor": "#ffffff"
       }
     }
   ],

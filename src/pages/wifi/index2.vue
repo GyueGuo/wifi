@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import { getAdId, getWifiConfig, sendWifiLog } from '../../services/wifi';
+import { getAdId, getWifiConfig, sendWifiLog, sendWifiLog2 } from '../../services/wifi';
+import { uuidv4 } from '../../utils/uuid'
 export default {
   data() {
     return {
@@ -49,7 +50,9 @@ export default {
       ad3: undefined,
       ad4: undefined,
       rewardVideo: undefined,
-      nextAd: false
+      nextAd: false,
+      osName: '',
+      uuid: '',
     }
   },
   onReady() {
@@ -83,8 +86,18 @@ export default {
       this.rewardVideoAdId = data.rewardVideoAdId;
       this.ad1 = data.videoAdId1;
     })
+    wx.getSystemInfo({
+      success: (result) => {
+        this.osName = result.platform
+      }
+    })
+    this.uuid = uuidv4(32, 32)
+    this.sendLog(params.wifiId, 0, {}, uuid)
   },
   methods: {
+    sendLog(wifiId, type, body, uuid) {
+      sendWifiLog2({ wifiId: wifiId, type: type, body: JSON.stringify(body), openId: uuid })
+    },
     getUrlParams(url) {
       let urlStr = url;
       // 创建空对象存储参数
@@ -99,6 +112,7 @@ export default {
       return obj;
     },
     showAd() {
+      this.sendLog(this.wifiId, 10, {}, this.uuid);
       wx.showLoading({
         title: "获取中...",
         mask: true,
@@ -108,12 +122,14 @@ export default {
           const rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: this.rewardVideoAdId });
           rewardedVideoAd.load().then(() => {
             wx.hideLoading();
+            this.sendLog(this.wifiId, 20, { loadType: 'first' }, this.uuid);
             rewardedVideoAd.show();
           });
           rewardedVideoAd.onError((err) => {
             wx.hideLoading();
           });
           rewardedVideoAd.onClose((res) => {
+            this.sendLog(this.wifiId, 30, { adStatus: res && res.isEnded }, this.uuid);
             res && res.isEnded && this.showWifi();
           })
           this.rewardVideo = rewardedVideoAd;
@@ -121,6 +137,7 @@ export default {
       } else {
         this.rewardVideo.load().then(() => {
           wx.hideLoading();
+          this.sendLog(this.wifiId, 20, { loadType: 'second' }, this.uuid);
           this.rewardVideo.show();
         });
       }
@@ -131,12 +148,13 @@ export default {
         mask: true,
       });
       this.wifiAvailable = true;
-      console.log(this.wifiId)
+      this.sendLog(this.wifiId, 40, { adStatus: res && res.isEnded }, this.uuid);
       getWifiConfig({
         uid: this.uid,
         wifiId: this.wifiId,
       }).then(({ data }) => {
         console.log('获取wifi配置', data)
+        this.sendLog(this.wifiId, 50, data, this.uuid);
         wx.hideLoading();
         this.wifiInfo = data;
         this.connect();
@@ -147,7 +165,7 @@ export default {
           content: err?.msg || "wifi信息获取失败，请重试",
           confirmText: "重试",
           success: (res) => {
-            res.confirm && this.getWifiConfig();
+            res.confirm && this.showWifi();
           }
         });
       });
@@ -175,6 +193,7 @@ export default {
       console.log('连接wifi', res)
       return new Promise((resolve, reject) => {
         const { wifiInfo } = this;
+        let connectStatus = false;
         for (const index in res.wifiList) {
           const wifi = res.wifiList[index];
           if (wifi.SSID == this.wifiInfo.ssid) {
@@ -183,12 +202,22 @@ export default {
               SSID: wifi.SSID,
               BSSID: wifi.BSSID,
               password: wifiInfo.pwd,
-              success: resolve,
+              forceNewApi: true,
+              success: () => {
+                connectStatus = true;
+                resolve();
+              },
               fail: (error) => {
                 reject({ ...error, type: 'connectWifi' });
-              }
+              },
             });
+            return;
           }
+        }
+        if (connectStatus) {
+          resolve();
+        } else {
+          reject({ errCode: '-99999', errMsg: '未找到合适的wifi信息', type: 'connectWifi' })
         }
       });
     },
@@ -201,24 +230,61 @@ export default {
         title: "连接中...",
         mask: true,
       });
-      this.startWifi()
-        .then(() => this.onWifiList())
-        .then(() => this.getWifiList())
-        .catch((e) => {
-          console.log('连接失败', e)
-          wx.hideLoading()
-        });
+      if (this.osName == 'ios') {
+        this.startWifi()
+          .then(() => this.connectWifi({ wifiList: [{ SSID: this.wifiInfo.ssid, BSSID: '', PASSWORD: this.wifiInfo.pwd }] }))
+          .then(() => {
+            console.log("外层的连接成功")
+            sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 1 });
+            this.connecting = false;
+            this.connected = true;
+            wx.hideLoading();
+          }).catch((e) => {
+            console.log(e)
+            wx.hideLoading();
+            if (e.errCode == '12004') {
+              console.log('重复连接')
+              this.connecting = false;
+              this.connected = true;
+              setTimeout(() => {
+                sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 2, failMsg: JSON.stringify(e) })
+              }, 2000);
+              return;
+            }
+            sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
+            this.adShow = true;
+            this.connecting = false;
+            if (this.wifiInfo) {
+              this.isModalVisible = true;
+            } else {
+              wx.showModal({
+                title: '连接失败',
+                content: e?.errMsg || '',
+              });
+            }
+          });
+      } else {
+        this.startWifi()
+          .then(() => this.onWifiList())
+          .then(() => this.getWifiList())
+          .catch((e) => {
+            console.log('连接失败', e)
+            sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
+            wx.hideLoading()
+          });
+      }
     },
     onWifiList() {
       return new Promise((resolve, reject) => {
         wx.onGetWifiList(res1 => {
           console.log(res1)
+          this.sendLog(this.wifiId, 60, JSON.stringify(res1), this.uuid);
           if (res1.wifiList.length !== 0) {
             this.connectWifi(res1).then(() => {
               this.connecting = false;
               this.connected = true;
               wx.hideLoading();
-              sendWifiLog({ wifiId: this.wifiId, status: 1 })
+              sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 1 })
             }).catch((e) => {
               console.log(e)
               wx.hideLoading();
@@ -226,10 +292,10 @@ export default {
                 console.log('重复连接')
                 this.connecting = false;
                 this.connected = true;
-                sendWifiLog({ wifiId: this.wifiId, status: 2, failMsg: JSON.stringify(e) })
+                sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 2, failMsg: JSON.stringify(e) })
                 return;
               }
-              sendWifiLog({ wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
+              sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 0, failMsg: JSON.stringify(e) })
               this.adShow = true;
               this.connecting = false;
               if (this.wifiInfo) {

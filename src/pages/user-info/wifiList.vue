@@ -11,6 +11,8 @@
             WIFI名称: {{ wifi.ssid }}
           </view>
           <view class="info">WIFI密码: {{ wifi.pwd }}</view>
+          <view class="info">昨天连接: {{ wifi.yesterdaySuccessCount }}次</view>
+          <view class="info">累计连接: {{ wifi.successCount }}次</view>
           <view class="operate">
             <button @click="updateWifi(wifi)" size="mini">编辑</button>
             <button @click="showQrcode(wifi)" size="mini">二维码</button>

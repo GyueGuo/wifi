@@ -5,9 +5,9 @@
       <view class="income">
         <text class="income-number">{{ yesterdayAmount || 0 }}元</text>
       </view>
-      <!-- <view class="income">
-        <text class="totalAmount">余额:{{ totalAmount || 0 }}元</text>
-      </view> -->
+      <view class="btn">
+        <button @click="tixian">提现</button>
+      </view>
     </view>
     <view class="middle">
       <text class="left">可提收益：{{ totalAmount }}元</text>
@@ -47,26 +47,8 @@ export default {
     }
   },
   onLoad() {
-    //加载当前登陆用户数据
-    // uni.request({
-    // 	url: '/wechat/statistics/getMyReport',
-    // 	method: 'GET',
-    // 	data: {
-    // 		loginCode: code
-    // 	},
-    // 	success: (result) => {
-    // 		if (result.code == 0) {
-    // 			//请求成功
-    // 		} else if (result.code == 401) {
-    // 			//未登陆，所有数据展示*号
-    // 		} else {
-
-    // 		}
-    // 	},
-    // 	fail: (err) => {
-    // 		//登陆失败
-    // 	}
-    // });
+    const path = wx.env.USER_DATA_PATH;
+    console.log(path)
   },
   mounted() {
     this.loadData();
@@ -94,6 +76,11 @@ export default {
       }, (err) => {
         console.log(err);
       });
+    },
+    tixian() {
+      uni.navigateTo({
+        url: '/pages/pay/index'
+      })
     }
   }
 }
@@ -132,6 +119,15 @@ export default {
     .totalAmount {
       font-size: 40rpx;
     }
+  }
+
+  .btn button {
+    width: 150rpx;
+    height: 60rpx;
+    font-size: 25rpx;
+    margin: 40rpx 0rpx -40rpx 220%;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 64rpx;
   }
 }
 

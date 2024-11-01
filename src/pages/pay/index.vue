@@ -9,6 +9,9 @@
     <view class="btn">
       <button @click="goPayList">提现记录</button>
     </view>
+    <view class="btn">
+      <button @click="showUpdatePayAccount">维护提现账户</button>
+    </view>
     <view class="desc">
       <text class="title">提现说明</text>
       <text>1.由于账号限制，暂提现只支持支付宝提现，需要提供支付宝实名制账号，非实名制用户账号无法支持提现，请务必将提现的支付宝账号进行实名认证。</text>
@@ -18,34 +21,32 @@
       <text>5.我司保留对本后台上述提现说明的最终解释权。</text>
     </view>
     <view class="bottom">
-      <button @click="showPayForm">申请提现</button>
+      <button @click="showPayFormModel">申请提现</button>
     </view>
-    <view class="bottom">
-      <button @click="showPayAccountForm">维护提现账户</button>
-    </view>
-    <view class="popupView" v-if="popupView">
+    <view class="popupView" v-if="showPayForm">
       <!-- 遮罩区域，点击隐藏弹出层 -->
-      <view class="close" @click="previewCode"></view>
+      <view class="close" @click="closePayFormModel"></view>
       <!-- 内容区 -->
 
       <view class="content">
-        <view style="margin-bottom: 30rpx;">
+        <view style="margin-bottom: 30rpx;margin-top: 100rpx;">
           提现金额:
         </view>
         <view>
-          <input style="background-color: #fff;height: 100rpx;" />
+          <input v-model="payAmount" class="input" placeholder="请输入提现金额" type="digit" :focus="true" />
         </view>
-        <view style="margin-top: 50rpx;">
-          <button>确定</button>
+        <view class="btn-view">
+          <button @click="submitPay" class="primary-btn">确定</button>
+          <button @click="closePayFormModel">关闭</button>
         </view>
       </view>
       <!-- 遮罩区域，点击隐藏弹出层 -->
-      <view class="close" @click="previewCode"></view>
+      <view class="close" @click="closePayFormModel"></view>
     </view>
     <!-- 维护提现账户 -->
     <view class="popupView" v-if="payAccountModel">
       <!-- 遮罩区域，点击隐藏弹出层 -->
-      <view class="close" @click="closePayForm"></view>
+      <view class="close" @click="closeUpdatePayAccount"></view>
       <!-- 内容区 -->
       <view class="content">
         <div class="form">
@@ -64,23 +65,32 @@
           <view class="item">
             <view class="label">支付二维码</view>
             <view class="content">
-              <Button class="button" type="primary" @click="selectPayImage" :disabled="isDisabled">选择支付二维码</Button>
-              <image style="width: 200px; height: 200px; background-color: #eeeeee;" mode="aspectFit"
-                src="{{payImage || payQrcode}}">
-              </image>
+              <Button type="default" size="mini" @click="selectPayImage" :disabled="isDisabled">选择支付二维码</Button>
             </view>
           </view>
-          <Button class="button" type="primary" @click="updateAccount" :disabled="isDisabled">保存</Button>
+          <view class="item" v-if="payImage || account.accountQrcode">
+            <view class="content">
+              <image style="width: 200px; height: 200px; background-color: #eeeeee;" mode="aspectFit"
+                :src="payImage || account.accountQrcode" />
+            </view>
+          </view>
+          <view class="btn-view">
+            <Button class="primary-btn" type="primary" @click="updateAccount" :disabled="isDisabled">提交</Button>
+            <Button @click="closeUpdatePayAccount" :disabled="isDisabled">关闭</Button>
+          </view>
+
         </div>
       </view>
       <!-- 遮罩区域，点击隐藏弹出层 -->
-      <view class="close" @click="closePayForm"></view>
+      <view class="close" @click="closeUpdatePayAccount"></view>
     </view>
   </view>
 </template>
 
 <script>
 import { getWalletAccount, updateAccount } from '../../services/report';
+import { submitPay } from '../../services/user';
+import { getUserToken, logout } from "../../utils/user";
 
 export default {
   data() {
@@ -88,16 +98,17 @@ export default {
       totalAmount: "*",
       yesterdayAmount: "*",
       withdrawalAmount: "*",
+      payAmount: '',
       isNoMore: false,
       pageNo: 1,
       pageSize: 20,
-      popupView: false,
+      showPayForm: false,
       payAccountModel: false,
-      payImage: undefined,
-      payQrcode: undefined,
+      payImage: null,
       account: {
         account: '',
         accountUserName: '',
+        accountQrcode: null,
       },
       list: [
 
@@ -107,22 +118,28 @@ export default {
   onLoad() {
   },
   mounted() {
-    this.loadData();
+    this.loadData('index');
   },
   onReachBottom() {
     if (this.isNoMore) {
       return;
     }
     this.pageNo++
-    this.loadData();
+    this.loadData('index');
   },
   methods: {
-    loadData() {
-      getWalletAccount({}).then((res) => {
+    loadData(type) {
+      getWalletAccount({ type: type }).then((res) => {
         if (res.code == 0) {
           this.totalAmount = res.data.balanceAmount;
           this.withdrawalAmount = res.data.withdrawalAmount;
-          this.payQrcode = 'data:image/png;base64,' + res.data.qrcode;
+          this.account.account = res.data.account;
+          this.account.accountUserName = res.data.accountUserName;
+          console.log(res.data.accountQrcode)
+          if (res.data.accountQrcode) {
+            console.log('图片赋值')
+            this.account.accountQrcode = 'data:image/png;base64,' + res.data.accountQrcode;
+          }
         } else {
           uni.showToast({
             icon: 'error',
@@ -140,61 +157,88 @@ export default {
       //如果选择了图片则走文件上传，否则就只更新两个字段
       const that = this;
       if (this.payImage) {
-        wx.uploadFile({
-          url: 'http://127.0.0.1:8080/withdrawal/updateWalletAccount', //接口地址
-          filePath: this.payImage,//本地地址
-          name: 'file',
-          formData: {
-            'accountUserName': this.account.accountUserName,
-            'account': this.account.account,
-          },
-          success(res) {
-            if (res.code == 0) {
-              wx.showToast({
-                title: '更新成功',
-                icon: 'success',
-                duration: 2000,
-                success: () => {
-                  that.showPayForm = false;
-                }
-              });
+        const fs = wx.getFileSystemManager()
+        const img = fs.readFileSync(this.payImage, 'base64');
+        this.account.file = img;
+      }
+      updateAccount(this.account).then((res) => {
+        if (res.code == 0) {
+          uni.showToast({
+            icon: 'success',
+            title: '更新成功',
+            duration: 2000,
+            success: () => {
+              that.payAccountModel = false;
             }
-          }
-        })
-      } else {
-        updateAccount(account).then((res) => {
-          if (res.code == 0) {
-            uni.showToast({
-              icon: 'success',
-              title: '更新成功',
-              duration: 2000,
-              success: () => {
-                that.showPayForm = false;
-              }
-            })
-          } else {
-            uni.showToast({
-              icon: 'error',
-              title: '更新失败:' + res.message,
-            })
-          }
-        }).catch((err) => {
-          console.log(err)
+          })
+        } else {
           uni.showToast({
             icon: 'error',
-            title: '更新失败，请稍候重试',
+            title: '更新失败:' + res.msg,
           })
-        });
-      }
+        }
+      }).catch((err) => {
+        console.log(err)
+        uni.showToast({
+          icon: 'error',
+          title: '更新失败，请稍候重试',
+        })
+      });
     },
     selectPayImage() {
+      const that = this;
       wx.chooseMedia({
         count: 9,
         mediaType: ['image'],
         sourceType: ['album'],
         camera: 'back',
         success(res) {
-          this.payImage = res.tempFiles[0].tempFilePath
+          console.log(res)
+          that.payImage = res.tempFiles[0].tempFilePath
+        }
+      })
+    },
+    submitPay() {
+      const that = this;
+      wx.showModal({
+        title: "提现确认",
+        content: `请确认是否提现${this.payAmount}元？`,
+        cancelText: '取消',
+        confirmText: '确认',
+        success: (res) => {
+          if (!res.confirm) {
+            return
+          }
+          submitPay({ amount: this.payAmount })
+            .then((res) => {
+              if (res.code == 0) {
+                uni.showToast({
+                  icon: 'success',
+                  title: '申请成功',
+                  success: () => {
+                    that.showPayForm = false;
+                    that.loadData('index');
+                  }
+                });
+              } else {
+                uni.showToast({
+                  icon: 'error',
+                  title: res.msg,
+                  success: () => {
+                    that.loadData('index');
+                  }
+                });
+              }
+            })
+            .catch(() => {
+              uni.showToast({
+                icon: 'error',
+                title: '申请失败',
+                success: () => {
+                  that.loadData('index');
+                }
+              });
+            });
         }
       })
     },
@@ -206,11 +250,25 @@ export default {
         url: '/pages/pay/index'
       })
     },
-    showPayForm() {
-      this.popupView = !this.popupView;
+    showPayFormModel() {
+      if (!this.account.account || !this.account.accountUserName) {
+        wx.showToast({
+          title: '请维护提现账户',
+          icon: 'error',
+        })
+        return;
+      }
+      this.showPayForm = !this.showPayForm;
     },
-    closePayForm() {
-      this.showPayForm = !this.showPayForm；
+    closePayFormModel() {
+      this.showPayForm = !this.showPayForm;
+    },
+    showUpdatePayAccount() {
+      this.loadData("qrcode")
+      this.payAccountModel = !this.payAccountModel;
+    },
+    closeUpdatePayAccount() {
+      this.payAccountModel = !this.payAccountModel;
     }
   }
 }
@@ -309,7 +367,7 @@ export default {
 }
 
 .popupView {
-  width: 100vw;
+  width: 95vw;
   height: calc(100vh - 0px);
   z-index: 1000;
   display: flex;
@@ -326,15 +384,28 @@ export default {
 }
 
 .popupView .content {
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   padding: 15rpx;
   text-align: center;
 }
 
+.btn-view {
+  display: flex;
+  margin-top: 20rpx;
+
+  button {
+    width: 200rpx;
+  }
+}
+
+.primary-btn {
+  background-color: $uni-color-primary;
+}
+
+
 .form {
   overflow: hidden;
   border-radius: 12rpx;
-  margin: -40rpx 32rpx 0;
   padding: 0 20rpx;
   background-color: $uni-text-color-inverse;
 
@@ -359,23 +430,12 @@ export default {
       }
     }
   }
+}
 
-  .button {
-    margin-top: 100rpx;
-    display: block;
-    border-radius: 16rpx;
-    padding: 0;
-    width: 100%;
-    height: 100rpx;
-    line-height: 100rpx;
-    font-size: 32rpx;
-    text-align: center;
-    color: $uni-text-color-inverse !important;
-    background-color: $uni-color-primary !important;
-
-    &[disabled] {
-      background-color: $uni-text-color-disable !important;
-    }
-  }
+.input {
+  border: 1px solid #d2d2d2;
+  background-color: transparent;
+  background-color: #fff;
+  height: 100rpx;
 }
 </style>

@@ -4,12 +4,12 @@
             <scroll-view class="scroll-view" scroll-y refresher-enabled :refresher-triggered="refresh">
                 <view class="item" v-for="(pay, index ) in list" :key="index">
                     <view class="info">
-                        提现日期: {{ pay.createDate }}
-                    </view>
-                    <view class="info">
-                        提现金额: {{ pay.amount }}
+                        提现金额: {{ pay.amount }}元
                     </view>
                     <view class="info">提现状态:{{ pay.statusName }}</view>
+                    <view class="info">
+                        提现日期: {{ pay.createTime }}
+                    </view>
                     <view class="info" v-if="pay.status == 'pay_fail'">失败原因:{{ pay.failReason }}</view>
                 </view>
             </scroll-view>
@@ -22,14 +22,14 @@ import { getPayDetailList } from '../../services/report';
 export default {
     data() {
         return {
-            refresh = true,
+            refresh: true,
             safeBottom: `height: ${uni.getSystemInfoSync().safeAreaInsets.bottom}px`,
             list: []
         }
     },
 
     onLoad() {
-
+        this.getList();
     },
     onPullDownRefresh() {
         // if (this.userId != '') {

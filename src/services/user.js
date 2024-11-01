@@ -54,3 +54,9 @@ export const setRate = (data) =>
     method: 'POST',
     data,
   })
+export const submitPay = (data) =>
+  request({
+    url: '/wechat/user/withdrawal',
+    method: 'POST',
+    data,
+  })

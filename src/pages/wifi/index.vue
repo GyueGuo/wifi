@@ -4,6 +4,10 @@
     <view v-if="connected" class="button">连接成功</view>
 
     <view v-else class="button" @click="showAd">一键连接</view>
+    <!-- <view class="tips">
+      <view>温馨提示: </view>
+      <view>请确保手机已开启定位功能、WIFI处于开启状态</view>
+    </view> -->
     <view class="ad-modal" v-if="ad1">
       <ad v-if="ad1" :unit-id="ad1" ad-theme="white"></ad>
     </view>
@@ -91,7 +95,8 @@ export default {
         this.osName = result.platform
       }
     })
-    this.uuid = uuidv4(32, 32)
+    const uuid = uuidv4(32, 32)
+    this.uuid = uuid;
     this.sendLog(params.wifiId, 0, {}, uuid)
   },
   methods: {
@@ -112,6 +117,13 @@ export default {
       return obj;
     },
     showAd() {
+      const systemSetting = wx.getSystemSetting();
+      if (!systemSetting.wifiEnabled || !systemSetting.locationEnabled) {
+        wx.showModal({
+          content: !systemSetting.locationEnabled ? "请开启手机定位" : "请开启手机WIFI功能"
+        });
+        return;
+      }
       this.sendLog(this.wifiId, 10, {}, this.uuid);
       wx.showLoading({
         title: "获取中...",
@@ -148,7 +160,7 @@ export default {
         mask: true,
       });
       this.wifiAvailable = true;
-      this.sendLog(this.wifiId, 40, { adStatus: res && res.isEnded }, this.uuid);
+      this.sendLog(this.wifiId, 40, {}, this.uuid);
       getWifiConfig({
         uid: this.uid,
         wifiId: this.wifiId,
@@ -236,12 +248,14 @@ export default {
           .then(() => {
             console.log("外层的连接成功")
             sendWifiLog({ uuid: this.uuid, wifiId: this.wifiId, status: 1 });
+            this.sendLog(this.wifiId, 70, { status: 'success' }, this.uuid);
             this.connecting = false;
             this.connected = true;
             wx.hideLoading();
           }).catch((e) => {
             console.log(e)
             wx.hideLoading();
+            this.sendLog(this.wifiId, 70, { status: 'fail' }, this.uuid);
             if (e.errCode == '12004') {
               console.log('重复连接')
               this.connecting = false;
@@ -389,6 +403,9 @@ page {
     border-radius: 50rpx;
     font-size: 36rpx;
     text-align: center;
+  }
+  .tips {
+    margin: 60rpx 48rpx;
   }
 }
 

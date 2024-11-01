@@ -24,4 +24,4 @@ export const uuidv4 = (len, radix) => {
     }
   }
   return uuid.join('');
-},
+}
